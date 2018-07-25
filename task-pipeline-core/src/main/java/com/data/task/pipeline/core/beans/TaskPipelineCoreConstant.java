@@ -15,11 +15,13 @@ public class TaskPipelineCoreConstant {
     public static final String TASKS_RESULT = "/result";
     public static final String ASSIGN_PATH = "/assign/";
     public static final String WORKER_INIT_WEIGHT = "0";
+    public static final String ASSIGN_TASK_SEP = "__";
+    public static final String TASK_SEP = "-";
 
-    enum TaskStatus {
+    public enum TaskStatus {
         SUBMIT("submit"),RUNNING("running"),DONE("done");
         private final String status;
-        private TaskStatus(String status){
+        TaskStatus(String status){
             this.status = status;
         }
         public String status() {

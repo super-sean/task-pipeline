@@ -13,7 +13,7 @@ import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.*;
  **/
 public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
 
-    private static Logger logger = LoggerFactory.getLogger(TaskPipelineOperation.class);
+    private static Logger log = LoggerFactory.getLogger(TaskPipelineOperation.class);
 
     public TaskPipelineOperation(TaskPipelineCoreConfig config) {
         super(config);
@@ -39,8 +39,11 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public void registerWorkerNode(String appName,String node) throws Exception {
+        if(checkNodeExist(WORKERS_PATH + appName + "/" + node)) {
+            return;
+        }
         //初始化worker权重为0
-        createNode(WORKERS_PATH + appName + node,WORKER_INIT_WEIGHT);
+        createNode(WORKERS_PATH + appName + "/" + node,WORKER_INIT_WEIGHT);
     }
 
     /**
@@ -83,7 +86,18 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public String getTaskStatus(String appName,String taskName) throws Exception {
-        return getNodeValue(TASKS_PATH + appName + "/" + taskName + "/" + TASKS_STATUS);
+        return getNodeValue(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS);
+    }
+
+    /**
+     * 获取任务状态
+     * @param appName
+     * @param taskName
+     * @return
+     * @throws Exception
+     */
+    public String getTaskParams(String appName,String taskName) throws Exception {
+        return getNodeValue(TASKS_PATH + appName + "/" + taskName + TASKS_PARAMS);
     }
 
     /**
@@ -94,7 +108,7 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public String getTaskResult(String appName,String taskName) throws Exception {
-        return getNodeValue(TASKS_PATH + appName + "/" + taskName + "/" + TASKS_RESULT);
+        return getNodeValue(TASKS_PATH + appName + "/" + taskName + TASKS_RESULT);
     }
 
     /**
@@ -105,7 +119,7 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public void assignTask(String appName,String taskName,String worker) throws Exception {
-        createNode(ASSIGN_PATH + appName + "/" + worker + "-" + taskName,"");
+        createNode(ASSIGN_PATH + appName + "/worker" + ASSIGN_TASK_SEP + worker + ASSIGN_TASK_SEP + "task" + ASSIGN_TASK_SEP + taskName,"");
     }
 
     /**
@@ -116,7 +130,7 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public void updateTaskStatus(String appName,String taskName,String status) throws Exception {
-        updateNodeValue(TASKS_PATH + appName + "/" + taskName + "/" + TASKS_STATUS,status);
+        updateNodeValue(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS,status);
     }
 
     /**
@@ -127,13 +141,13 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public void fulfilATask(String appName,String taskName,String result) throws Exception {
-        String nodePath = TASKS_PATH + appName + "/" + taskName + "/" + TASKS_RESULT;
+        String nodePath = TASKS_PATH + appName + "/" + taskName + TASKS_RESULT;
         if(checkNodeExist(nodePath)){
             updateNodeValue(nodePath,result);
         } else {
             createNode(nodePath,result);
         }
-        updateNodeValue(TASKS_PATH + appName + "/" + taskName + "/" + TASKS_STATUS,TaskStatus.DONE.status());
+        updateNodeValue(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS,TaskStatus.DONE.status());
     }
 
     /**
@@ -173,8 +187,9 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @param listener
      * @throws Exception
      */
-    public void watchAssignTaskList(String appName,PathChildrenCacheListener listener) throws Exception {
-        watchChildrenNodes(ASSIGN_PATH + appName,listener);
+    public void watchAssignTaskList(String appName,TaskPipelineAssignTaskListener listener) throws Exception {
+        listener.setOperation(this);
+        watchChildrenNodes(ASSIGN_PATH + appName,listener.getListener());
     }
 
 }

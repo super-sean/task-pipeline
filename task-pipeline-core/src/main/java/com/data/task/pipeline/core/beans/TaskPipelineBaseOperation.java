@@ -63,8 +63,8 @@ public abstract class TaskPipelineBaseOperation {
     }
 
     public void watchChildrenNodes(String nodePath,PathChildrenCacheListener listener) throws Exception {
-        PathChildrenCache cache = new PathChildrenCache(cf, nodePath, true);
-        cache.start(PathChildrenCache.StartMode.POST_INITIALIZED_EVENT);
+        PathChildrenCache cache = new PathChildrenCache(cf, nodePath, false);
+        cache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
         cache.getListenable().addListener(listener);
     }
 

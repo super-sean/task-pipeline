@@ -57,6 +57,7 @@ public class TaskPipelineAppSupporter {
     public String getTaskResult(String taskName) throws Exception {
         return operation.getTaskResult(appName,taskName);
     }
+
     public String getAppName() {
         return appName;
     }
