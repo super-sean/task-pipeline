@@ -12,7 +12,7 @@
 
 ### 实现设计
 基于实现思路，设计zk的path结构如下
-![zk_path设计](task-pipeline/readmeimg/zk_path设计.png)
+![zk_path设计](http://gitlab.51dinghuo.cc/data/task-pipeline/blob/develop/readmeimg/zk_path设计.png)
 
 */master*  
 为程序高可用实现预留路径  
@@ -42,7 +42,7 @@ history目录下为执行完的作业，定时持久化清理
 	对于业务端来说，只需要提交服务端接口标识，接口参数之后返回taskId,根据需要通过taskId进行结果回调监听，支持查询task状态，需要屏蔽底层操作，透明化复杂操作。  
 3. 服务端接口包封装  
 	对于服务端来说，只需要继承某个类，声明服务标识，实现监听task队列的方法，处理被推送过来的任务，并根据需要更新自定义task状态，处理完成后在方法选择返回的内容类型即可
-{% asset_img 模块功能概览.png  模块功能概览%}    
+![模块功能概览](http://gitlab.51dinghuo.cc/data/task-pipeline/blob/develop/readmeimg/模块功能概览.png)
     
 ### Task分发策略
 worker每当被分发task，便权重添加1，处理完则减1  
