@@ -42,7 +42,7 @@ public class TaskPipelineAppSupporter {
         }
 
         try {
-            operation.registerAppNode(appName,nodeName);
+            operation.registerApp(nodeName);
         } catch (Exception e) {
             log.error("register to task-pipeline platform exception",e);
         }
