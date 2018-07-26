@@ -1,7 +1,8 @@
-package com.data.task.pipeline;
+package com.data.task.pipeline.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 
 @SpringBootApplication
 public class TaskPipelineServerApplication {

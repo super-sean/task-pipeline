@@ -19,7 +19,7 @@ public class TaskPipelineCoreConstant {
     public static final String TASK_SEP = "-";
 
     public enum TaskStatus {
-        SUBMIT("submit"),RUNNING("running"),DONE("done");
+        SUBMIT("submit"),RUNNING("running"),DONE("done"),CONSUMED("consumed");
         private final String status;
         TaskStatus(String status){
             this.status = status;

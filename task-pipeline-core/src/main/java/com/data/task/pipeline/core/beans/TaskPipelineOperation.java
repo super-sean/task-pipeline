@@ -5,6 +5,8 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.*;
 
 /**
@@ -158,8 +160,13 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public void watchTaskStatus(String appName,String taskName,TaskPipelineTaskStatusListener listener) throws Exception {
+        listener.setOperation(this);
         NodeCache nodeCache = watchNode(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS, listener.getListener());
         listener.setCache(nodeCache);
+    }
+
+    public boolean checkTaskResultExist(String appName,String taskName) throws Exception {
+        return checkNodeExist(TASKS_PATH + appName + "/" + taskName + TASKS_RESULT);
     }
 
     /**
@@ -177,8 +184,9 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @param listener
      * @throws Exception
      */
-    public void watchTaskList(String appName,PathChildrenCacheListener listener) throws Exception {
-        watchChildrenNodes(TASKS_PATH + appName,listener);
+    public void watchTaskList(String appName,TaskPipelineAppTaskListener listener) throws Exception {
+        listener.setOperation(this);
+        watchChildrenNodes(TASKS_PATH + appName,listener.getListener());
     }
 
     /**
@@ -192,4 +200,11 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
         watchChildrenNodes(ASSIGN_PATH + appName,listener.getListener());
     }
 
+    public List<String> getTaskAppList() throws Exception {
+        return getNodeChildren(TASKS_PATH.substring(0,TASKS_PATH.length() - 1));
+    }
+
+    public List<String> getWorkerList(String appName) throws Exception {
+        return getNodeChildren(WORKERS_PATH + appName);
+    }
 }

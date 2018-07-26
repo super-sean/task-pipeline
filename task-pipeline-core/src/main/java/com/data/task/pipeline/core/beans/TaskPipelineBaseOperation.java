@@ -9,6 +9,7 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.zookeeper.CreateMode;
 
 import javax.annotation.PreDestroy;
+import java.util.List;
 import java.util.concurrent.*;
 
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.NAMESPACE;
@@ -40,6 +41,10 @@ public abstract class TaskPipelineBaseOperation {
 
     public String getNodeValue(String nodePath) throws Exception {
         return new String(cf.getData().forPath(nodePath));
+    }
+
+    public List<String> getNodeChildren(String nodePath) throws Exception {
+        return cf.getChildren().forPath(nodePath);
     }
 
 
