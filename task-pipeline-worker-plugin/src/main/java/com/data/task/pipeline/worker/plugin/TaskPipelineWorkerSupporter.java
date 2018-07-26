@@ -33,13 +33,13 @@ public class TaskPipelineWorkerSupporter {
             String ip=addr.getHostAddress().toString();
             //获取本机计算机名称
             String hostName=addr.getHostName().toString();
-            nodeName = hostName + "-" + ip;
+            nodeName = hostName + "-" + ip + "-" + System.currentTimeMillis();
         } catch (UnknownHostException e) {
             log.warn("get host info exception",e);
         }
 
         try {
-            operation.registerWorkerNode(appName,nodeName);
+            operation.registerWorker(nodeName);
         } catch (Exception e) {
             log.error("register to task-pipeline platform exception",e);
         }

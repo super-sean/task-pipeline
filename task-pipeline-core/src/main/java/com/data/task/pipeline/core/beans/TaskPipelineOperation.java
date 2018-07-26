@@ -2,6 +2,7 @@ package com.data.task.pipeline.core.beans;
 
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
+import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
         if(checkNodeExist(APPS_PATH + appName + "/" + node)) {
             return;
         }
-        createNode(APPS_PATH + appName + "/" + node,"");
+        createNode(APPS_PATH + appName + "/" + node,"",CreateMode.EPHEMERAL);
     }
 
     /**
@@ -45,7 +46,19 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
             return;
         }
         //初始化worker权重为0
-        createNode(WORKERS_PATH + appName + "/" + node,WORKER_INIT_WEIGHT);
+        createNode(WORKERS_PATH + appName + "/" + node,WORKER_INIT_WEIGHT, CreateMode.EPHEMERAL);
+    }
+
+    public Integer getWorkerWeight(String appName,String node) throws Exception {
+        String nodePath = WORKERS_PATH + appName + "/" + node;
+        if(!checkNodeExist(nodePath)) {
+            return Integer.MAX_VALUE;
+        }
+        return Integer.parseInt(getNodeValue(nodePath));
+    }
+
+    public void updateWorkerWeight(String appName,String node,String weight) throws Exception {
+        updateNodeValue(WORKERS_PATH + appName + "/" + node,weight);
     }
 
     /**
@@ -76,6 +89,7 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public void submitTaskNode(String appName,String taskName,String params) throws Exception {
+        createNode(TASKS_PATH + appName + "/" + taskName,"");
         createNode(TASKS_PATH + appName + "/" + taskName + TASKS_PARAMS,params);
         createNode(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS,TaskStatus.SUBMIT.status());
     }
@@ -121,7 +135,7 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public void assignTask(String appName,String taskName,String worker) throws Exception {
-        createNode(ASSIGN_PATH + appName + "/worker" + ASSIGN_TASK_SEP + worker + ASSIGN_TASK_SEP + "task" + ASSIGN_TASK_SEP + taskName,"");
+        createNode(ASSIGN_PATH + appName + "/worker" + ASSIGN_TASK_SEP + worker + ASSIGN_TASK_SEP + "task" + ASSIGN_TASK_SEP + taskName,TaskStatus.SUBMIT.status());
     }
 
     /**
@@ -133,6 +147,17 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      */
     public void updateTaskStatus(String appName,String taskName,String status) throws Exception {
         updateNodeValue(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS,status);
+    }
+
+    /**
+     * 更新作业状态
+     * @param appName
+     * @param assigntaskName
+     * @param status
+     * @throws Exception
+     */
+    public void updateAssignTaskStatus(String appName,String assigntaskName,String status) throws Exception {
+        updateNodeValue(ASSIGN_PATH + appName + "/" + assigntaskName,status);
     }
 
     /**
@@ -161,7 +186,25 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      */
     public void watchTaskStatus(String appName,String taskName,TaskPipelineTaskStatusListener listener) throws Exception {
         listener.setOperation(this);
+        listener.setTaskName(taskName);
         NodeCache nodeCache = watchNode(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS, listener.getListener());
+        listener.setCache(nodeCache);
+    }
+
+    /**
+     * 监听作业状态变化
+     * @param appName
+     * @param taskName
+     * @param worker
+     * @param listener
+     * @throws Exception
+     */
+    public void watchAssignTaskStatus(String appName,String taskName,String worker,TaskPipelineAssignTaskStatusListener listener) throws Exception {
+        String assignTaskName ="worker" + ASSIGN_TASK_SEP + worker + ASSIGN_TASK_SEP + "task" + ASSIGN_TASK_SEP + taskName;
+        String assignTaskPath = ASSIGN_PATH + appName + "/" + assignTaskName;
+        listener.setOperation(this);
+        listener.setAssignTaskName(assignTaskName);
+        NodeCache nodeCache = watchNode(assignTaskPath, listener.getListener());
         listener.setCache(nodeCache);
     }
 
@@ -200,11 +243,51 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
         watchChildrenNodes(ASSIGN_PATH + appName,listener.getListener());
     }
 
+    /**
+     * 获取任务app列表
+     * @return
+     * @throws Exception
+     */
     public List<String> getTaskAppList() throws Exception {
         return getNodeChildren(TASKS_PATH.substring(0,TASKS_PATH.length() - 1));
     }
 
+    /**
+     * 获取对应app的worker
+     * @param appName
+     * @return
+     * @throws Exception
+     */
     public List<String> getWorkerList(String appName) throws Exception {
         return getNodeChildren(WORKERS_PATH + appName);
+    }
+
+    /**
+     * 归档Task
+     * @param appName
+     * @param taskName
+     * @throws Exception
+     */
+    public void archiveTask(String appName,String taskName) throws Exception {
+        String taskPath = TASKS_PATH + appName + "/" + taskName;
+        String paramsPath = TASKS_PATH + appName + "/" + taskName + TASKS_PARAMS;
+        String stausPath = TASKS_PATH + appName + "/" + taskName + TASKS_STATUS;
+        String resultPath = TASKS_PATH + appName + "/" + taskName + TASKS_RESULT;
+        createNode(TASKS_PATH + appName + HISTORY_DIR + taskName + TASKS_PARAMS,getNodeValue(paramsPath));
+        createNode(TASKS_PATH + appName + HISTORY_DIR + taskName + TASKS_STATUS,getNodeValue(stausPath));
+        createNode(TASKS_PATH + appName + HISTORY_DIR + taskName + TASKS_RESULT,getNodeValue(resultPath));
+        deleteNode(taskPath);
+    }
+
+    /**
+     * 归档作业
+     * @param appName
+     * @param assignTaskName
+     * @throws Exception
+     */
+    public void archiveAssignTask(String appName,String assignTaskName) throws Exception {
+        String originPath = ASSIGN_PATH + appName + "/" + assignTaskName;
+        createNode(ASSIGN_PATH + appName + HISTORY_DIR + assignTaskName,getNodeValue(originPath));
+        deleteNode(originPath);
     }
 }

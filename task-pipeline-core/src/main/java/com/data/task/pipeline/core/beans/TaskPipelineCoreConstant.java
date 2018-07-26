@@ -16,10 +16,11 @@ public class TaskPipelineCoreConstant {
     public static final String ASSIGN_PATH = "/assign/";
     public static final String WORKER_INIT_WEIGHT = "0";
     public static final String ASSIGN_TASK_SEP = "__";
+    public static final String HISTORY_DIR = "/history/";
     public static final String TASK_SEP = "-";
 
     public enum TaskStatus {
-        SUBMIT("submit"),RUNNING("running"),DONE("done"),CONSUMED("consumed");
+        SUBMIT("submit"),RUNNING("running"),DONE("done"),CONSUMED("consumed"),NOWORKER("noworker"),REPEAT("repeat");
         private final String status;
         TaskStatus(String status){
             this.status = status;

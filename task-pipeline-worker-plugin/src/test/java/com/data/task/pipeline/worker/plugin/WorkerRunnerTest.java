@@ -24,7 +24,7 @@ public class WorkerRunnerTest {
                 System.out.println(node);
                 try {
                     supporter.updateTaskStatus(taskName, TaskPipelineCoreConstant.TaskStatus.RUNNING.status());
-                    sleep(15000);
+                    sleep(5000);
                     supporter.fulfilATask(taskName,"{\"type\":\"content\",\"value\":\"something\"}");
                 } catch (Exception e) {
                     e.printStackTrace();

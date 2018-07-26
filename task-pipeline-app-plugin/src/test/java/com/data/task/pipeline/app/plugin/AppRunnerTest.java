@@ -12,8 +12,7 @@ public class AppRunnerTest {
     public static void main(String[] args) throws Exception {
         TaskPipelineCoreConfig config = new TaskPipelineCoreConfig("192.168.1.89:2181",1000,0,5,5,10,0,20);
         TaskPipelineAppSupporter supporter = new TaskPipelineAppSupporter("topn_select",config);
-        String taskName = supporter.getNodeName() + "-" + System.currentTimeMillis();
-        TaskPipelineTaskStatusListener listener = new TaskPipelineTaskStatusListener(supporter.getAppName(),taskName) {
+        TaskPipelineTaskStatusListener listener = new TaskPipelineTaskStatusListener(supporter.getAppName()) {
             @Override
             public void onTaskStatusChange(String appName, String taskName, String status) {
                 System.out.println(appName);
@@ -25,8 +24,8 @@ public class AppRunnerTest {
             }
         };
 
-        supporter.submitTask(taskName,"{\"par1\":\"test\"}",listener);
-        System.out.println("---------init task :" + supporter.getTaskStatus(taskName));
+        supporter.submitTask("{\"par1\":\"test\"}",listener);
+        System.out.println("---------init task :" + supporter.getTaskStatus(listener.getTaskName()));
         Thread thread = new Thread();
         thread.sleep(1000000);
     }

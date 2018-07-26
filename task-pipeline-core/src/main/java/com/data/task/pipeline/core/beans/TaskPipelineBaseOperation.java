@@ -32,10 +32,14 @@ public abstract class TaskPipelineBaseOperation {
         cf.start();
     }
 
-    public void createNode(String nodePath,String value) throws Exception {
+    public void createNode(String nodePath,String value,CreateMode... mode) throws Exception {
+        CreateMode createMode = CreateMode.PERSISTENT;
+        if(mode.length > 0) {
+            createMode = mode[0];
+        }
         cf.create()
                 .creatingParentsIfNeeded()
-                .withMode(CreateMode.PERSISTENT)
+                .withMode(createMode)
                 .forPath(nodePath, value.getBytes());
     }
 

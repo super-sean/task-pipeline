@@ -17,10 +17,27 @@ public abstract class TaskPipelineTaskStatusListener {
     private NodeCacheListener listener;
     private TaskPipelineOperation operation;
 
-    public TaskPipelineTaskStatusListener(String appName, String taskName) {
+    public TaskPipelineTaskStatusListener(String appName) {
         this.appName = appName;
-        this.taskName = taskName;
-        listener = () -> onTaskStatusChange(appName,taskName,new String(cache.getCurrentData().getData()));
+        listener = () -> {
+            if(cache.getCurrentData() == null){
+                return;
+            }
+            onTaskStatusChangeCallback(appName,taskName,new String(cache.getCurrentData().getData()));
+        };
+    }
+
+    /**
+     * 获取回调并标记任务状态为已消费
+     * @param appName
+     * @param taskName
+     * @param status
+     */
+    private void onTaskStatusChangeCallback(String appName,String taskName,String status) throws Exception {
+        if(TaskPipelineCoreConstant.TaskStatus.DONE.status().equals(status)) {
+            operation.updateTaskStatus(appName, taskName, TaskPipelineCoreConstant.TaskStatus.CONSUMED.status());
+        }
+        onTaskStatusChange(appName,taskName,status);
     }
 
     public String getTaskResult() {
@@ -59,4 +76,11 @@ public abstract class TaskPipelineTaskStatusListener {
         this.operation = operation;
     }
 
+    public void setTaskName(String taskName){
+        this.taskName = taskName;
+    }
+
+    public String getTaskName() {
+        return taskName;
+    }
 }

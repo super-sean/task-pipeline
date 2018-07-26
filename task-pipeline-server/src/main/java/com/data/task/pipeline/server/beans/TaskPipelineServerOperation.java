@@ -1,6 +1,7 @@
 package com.data.task.pipeline.server.beans;
 
 import com.data.task.pipeline.core.beans.TaskPipelineAppTaskListener;
+import com.data.task.pipeline.core.beans.TaskPipelineAssignTaskStatusListener;
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.TaskPipelineOperation;
 import org.slf4j.Logger;
@@ -30,4 +31,11 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
             }
         });
     }
+
+    public void assignTaskAndWatchStatus(String appName, String taskName, String worker, TaskPipelineAssignTaskStatusListener listener) throws Exception {
+        assignTask(appName,taskName, worker);
+        watchAssignTaskStatus(appName,taskName,worker,listener);
+    }
+
+
 }

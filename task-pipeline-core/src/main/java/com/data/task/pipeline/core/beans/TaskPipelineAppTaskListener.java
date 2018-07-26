@@ -26,14 +26,14 @@ public abstract class TaskPipelineAppTaskListener {
         String[] pathArray = event.getData().getPath().split("/");
         String appName = pathArray[2];
         String taskName = pathArray[3];
-        onAppTaskChange(appName,taskName);
+        onAppTaskSubmit(appName,taskName);
     }
     /**
      * 用于server端实现获取任务列表变化时回调
      * @param appName
      * @param taskName
      */
-    public abstract void onAppTaskChange(String appName,String taskName);
+    public abstract void onAppTaskSubmit(String appName,String taskName);
 
     protected PathChildrenCacheListener getListener(){
         return listener;

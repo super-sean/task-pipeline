@@ -55,11 +55,17 @@ public abstract class TaskPipelineAssignTaskListener {
         //检查task状态
         String status = operation.getTaskStatus(appName,taskName);
         if(!TaskPipelineCoreConstant.TaskStatus.SUBMIT.status().equals(status)){
+            //更新assignTask状态为重复分配
+            operation.updateAssignTaskStatus(appName,assignTaskName, TaskPipelineCoreConstant.TaskStatus.REPEAT.status());
             return;
         }
+        //更新assignTask状态为Running
+        operation.updateAssignTaskStatus(appName,assignTaskName, TaskPipelineCoreConstant.TaskStatus.RUNNING.status());
         //获取params
         String params = operation.getTaskParams(appName,taskName);
         onAssignTaskChange(appName,taskName,params,nodeName);
+        //更新assignTask状态为DONE
+        operation.updateAssignTaskStatus(appName,assignTaskName, TaskPipelineCoreConstant.TaskStatus.DONE.status());
     }
 
 

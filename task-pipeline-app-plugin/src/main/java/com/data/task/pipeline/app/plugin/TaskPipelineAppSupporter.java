@@ -9,6 +9,8 @@ import javax.annotation.PreDestroy;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.TASK_SEP;
+
 /**
  * @author xinzai
  * @create 2018-07-23 下午2:17
@@ -46,7 +48,8 @@ public class TaskPipelineAppSupporter {
         }
     }
 
-    public void submitTask(String taskName,String params,TaskPipelineTaskStatusListener listener) throws Exception {
+    public void submitTask(String params,TaskPipelineTaskStatusListener listener) throws Exception {
+        String taskName = nodeName + TASK_SEP + System.currentTimeMillis();
         operation.submitTask(taskName,params,listener);
     }
 
