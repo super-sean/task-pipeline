@@ -2,14 +2,11 @@ package com.data.task.pipeline.app.plugin;
 
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.TaskPipelineTaskStatusListener;
+import com.data.task.pipeline.core.beans.TaskPipelineUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PreDestroy;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.TASK_SEP;
 
 /**
  * @author xinzai
@@ -29,18 +26,7 @@ public class TaskPipelineAppSupporter {
     public TaskPipelineAppSupporter(String appName,TaskPipelineCoreConfig config) {
         this.appName = appName;
         operation = new TaskPipelineAppOperation(appName,config);
-        nodeName = System.currentTimeMillis() + "";
-        try {
-            InetAddress addr = InetAddress.getLocalHost();
-            //获取本机ip
-            String ip=addr.getHostAddress().toString();
-            //获取本机计算机名称
-            String hostName=addr.getHostName().toString();
-            nodeName = hostName + "-" + ip;
-        } catch (UnknownHostException e) {
-            log.warn("get host info exception",e);
-        }
-
+        nodeName = TaskPipelineUtils.getLocalNodeName();
         try {
             operation.registerApp(nodeName);
         } catch (Exception e) {
@@ -49,7 +35,7 @@ public class TaskPipelineAppSupporter {
     }
 
     public void submitTask(String params,TaskPipelineTaskStatusListener listener) throws Exception {
-        String taskName = nodeName + TASK_SEP + System.currentTimeMillis();
+        String taskName = operation.genericTaskName(nodeName);
         operation.submitTask(taskName,params,listener);
     }
 

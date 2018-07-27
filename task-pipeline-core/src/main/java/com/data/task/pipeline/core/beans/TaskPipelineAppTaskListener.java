@@ -5,6 +5,8 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.HISTORY_DIR;
+
 /**
  * @author xinzai
  * @create 2018-07-25 下午5:21
@@ -26,6 +28,10 @@ public abstract class TaskPipelineAppTaskListener {
         String[] pathArray = event.getData().getPath().split("/");
         String appName = pathArray[2];
         String taskName = pathArray[3];
+        //过滤history目录变化
+        if(HISTORY_DIR.replace("/","").equals(taskName)){
+            return;
+        }
         onAppTaskSubmit(appName,taskName);
     }
     /**

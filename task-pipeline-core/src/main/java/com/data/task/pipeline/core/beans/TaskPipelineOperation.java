@@ -7,6 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.stream.Collectors;
 
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.*;
 
@@ -23,6 +26,24 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
     }
 
     /**
+     * 检查master节点是否存在
+     * @return
+     * @throws Exception
+     */
+    public boolean checkMasterExist() throws Exception {
+        return checkNodeExist(MASTER_NODE);
+    }
+
+    /**
+     * 注册Master节点
+     * @param node
+     * @throws Exception
+     */
+    public void registerMasterNode(String node) throws Exception {
+        createNode(MASTER_NODE,node,CreateMode.EPHEMERAL);
+    }
+
+    /**
      * 注册app节点
      * @param appName
      * @param node
@@ -33,6 +54,35 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
             return;
         }
         createNode(APPS_PATH + appName + "/" + node,"",CreateMode.EPHEMERAL);
+    }
+
+    /**
+     * 检查app node是否存在
+     * @param node
+     * @return
+     * @throws Exception
+     */
+    public boolean checkAppNodeExist(String appName,String node) throws Exception {
+        return checkNodeExist(APPS_PATH + appName + "/" + node);
+    }
+
+    /**
+     * 获取app node列表
+     * @param appName
+     * @return
+     * @throws Exception
+     */
+    public List<String> getAppNodeList(String appName) throws Exception {
+        return getNodeChildren(APPS_PATH + appName);
+    }
+
+    /**
+     * 通过taskName获取app node
+     * @param taskName
+     * @return
+     */
+    public String getTaskSubmitAppNode(String taskName) {
+        return taskName.substring(0,taskName.lastIndexOf(TASK_SEP));
     }
 
     /**
@@ -72,15 +122,13 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
     }
 
     /**
-     * 移除worker节点
-     * @param appName
-     * @param node
-     * @throws Exception
+     * 生成task名字
+     * @param nodeName
+     * @return
      */
-    public void removeWorkerNode(String appName,String node) throws Exception {
-        deleteNode(WORKERS_PATH + appName + node);
+    public String genericTaskName(String nodeName) {
+        return nodeName + TASK_SEP + System.currentTimeMillis();
     }
-
     /**
      * 创建任务节点
      * @param appName
@@ -135,7 +183,21 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public void assignTask(String appName,String taskName,String worker) throws Exception {
-        createNode(ASSIGN_PATH + appName + "/worker" + ASSIGN_TASK_SEP + worker + ASSIGN_TASK_SEP + "task" + ASSIGN_TASK_SEP + taskName,TaskStatus.SUBMIT.status());
+        createNode(ASSIGN_PATH + appName + "/" + WORKER + ASSIGN_TASK_SEP + worker + ASSIGN_TASK_SEP + "task" + ASSIGN_TASK_SEP + taskName,TaskStatus.SUBMIT.status());
+    }
+
+    /**
+     * 通过assignTaskName获取worker node
+     * @param assignTaskName
+     * @return map key分别为worker,task,app
+     */
+    public Map<String,String> getAssignTaskWorkerInfo(String assignTaskName) {
+        Map<String,String> map = new WeakHashMap<>();
+        String[] assignInfos = assignTaskName.split(ASSIGN_TASK_SEP);
+        map.put(WORKER,assignInfos[1]);
+        map.put(TASK,assignInfos[3]);
+        map.put(APP_Node_NAME,getTaskSubmitAppNode(assignInfos[3]));
+        return map;
     }
 
     /**
@@ -177,6 +239,13 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
         updateNodeValue(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS,TaskStatus.DONE.status());
     }
 
+
+    public void watchMaster(TaskPipelineMasterStatusListener listener) throws Exception {
+        listener.setOperation(this);
+        NodeCache nodeCache = watchNode(MASTER_NODE,listener.getListener());
+        listener.setCache(nodeCache);
+    }
+
     /**
      * 监听任务状态变化
      * @param appName
@@ -208,9 +277,42 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
         listener.setCache(nodeCache);
     }
 
+    /**
+     * 监听worker节点变化
+     * @param appName
+     * @param node
+     * @param listener
+     * @throws Exception
+     */
+    public void watchWorker(String appName,String node,TaskPipelineWorkerListener listener) throws Exception {
+        listener.setOperation(this);
+        NodeCache nodeCache = watchNode(WORKERS_PATH + appName + "/" + node, listener.getListener());
+        listener.setCache(nodeCache);
+    }
+
+    /**
+     * 根据worker获取对应的作业列表
+     * @param appName
+     * @param worker
+     * @return
+     * @throws Exception
+     */
+    public List<String> getAssignTaskList(String appName,String worker) throws Exception {
+        List<String> assignTaskList =  getNodeChildren(ASSIGN_PATH + appName);
+        return assignTaskList.stream().filter( s -> s.contains(worker)).collect(Collectors.toList());
+    }
+
+    /**
+     * 查看task下的result节点是否存在
+     * @param appName
+     * @param taskName
+     * @return
+     * @throws Exception
+     */
     public boolean checkTaskResultExist(String appName,String taskName) throws Exception {
         return checkNodeExist(TASKS_PATH + appName + "/" + taskName + TASKS_RESULT);
     }
+
 
     /**
      * 监听业务列表变化
@@ -253,6 +355,60 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
     }
 
     /**
+     * 获取worker app列表
+     * @return
+     * @throws Exception
+     */
+    public List<String> getWorkerAppList() throws Exception {
+        return getNodeChildren(WORKERS_PATH.substring(0,WORKERS_PATH.length() - 1));
+    }
+
+    /**
+     * 获取app任务列表
+     * @param appName
+     * @return
+     * @throws Exception
+     */
+    public List<String> getTaskList(String appName) throws Exception {
+        List<String> tasks = getNodeChildren(TASKS_PATH + appName);
+        tasks.remove(HISTORY_DIR.replace("/",""));
+        return tasks;
+    }
+
+
+    /**
+     * 获取作业app列表
+     * @return
+     * @throws Exception
+     */
+    public List<String> getAssignTaskAppList() throws Exception {
+        return getNodeChildren(ASSIGN_PATH.substring(0,ASSIGN_PATH.length() - 1));
+    }
+
+    /**
+     * 获取作业列表
+     * @param appName
+     * @return
+     * @throws Exception
+     */
+    public List<String> getAssignTaskList(String appName) throws Exception {
+        List<String> assignTaskList = getNodeChildren(ASSIGN_PATH + appName);
+        assignTaskList.remove(HISTORY_DIR.replace("/",""));
+        return assignTaskList;
+    }
+
+    /**
+     * 获取作业状态
+     * @param appName
+     * @param assignTaskName
+     * @return
+     * @throws Exception
+     */
+    public String getAssignTaskStatus(String appName,String assignTaskName) throws Exception {
+        return getNodeValue(ASSIGN_PATH + appName + "/" + assignTaskName);
+    }
+
+    /**
      * 获取对应app的worker
      * @param appName
      * @return
@@ -275,7 +431,9 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
         String resultPath = TASKS_PATH + appName + "/" + taskName + TASKS_RESULT;
         createNode(TASKS_PATH + appName + HISTORY_DIR + taskName + TASKS_PARAMS,getNodeValue(paramsPath));
         createNode(TASKS_PATH + appName + HISTORY_DIR + taskName + TASKS_STATUS,getNodeValue(stausPath));
-        createNode(TASKS_PATH + appName + HISTORY_DIR + taskName + TASKS_RESULT,getNodeValue(resultPath));
+        if(checkTaskResultExist(appName,taskName)) {
+            createNode(TASKS_PATH + appName + HISTORY_DIR + taskName + TASKS_RESULT, getNodeValue(resultPath));
+        }
         deleteNode(taskPath);
     }
 

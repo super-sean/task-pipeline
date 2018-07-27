@@ -1,9 +1,6 @@
 package com.data.task.pipeline.server.beans;
 
-import com.data.task.pipeline.core.beans.TaskPipelineAppTaskListener;
-import com.data.task.pipeline.core.beans.TaskPipelineAssignTaskStatusListener;
-import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
-import com.data.task.pipeline.core.beans.TaskPipelineOperation;
+import com.data.task.pipeline.core.beans.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +20,7 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
 
     public void initTaskWatcher(TaskPipelineAppTaskListener listener) throws Exception {
         List<String> apps = getTaskAppList();
+        //监听task app目录下的新节点变化
         apps.forEach(appName -> {
             try {
                 watchTaskList(appName, listener);
@@ -30,11 +28,13 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
                 log.error("watch app:{} task list exception:{}",appName,e);
             }
         });
+
     }
 
-    public void assignTaskAndWatchStatus(String appName, String taskName, String worker, TaskPipelineAssignTaskStatusListener listener) throws Exception {
+    public void assignTaskAndWatchStatus(String appName, String taskName, String worker, TaskPipelineTaskStatusListener taskStatusListener, TaskPipelineAssignTaskStatusListener assignTaskStatusListener) throws Exception {
         assignTask(appName,taskName, worker);
-        watchAssignTaskStatus(appName,taskName,worker,listener);
+        watchTaskStatus(appName,taskName,taskStatusListener);
+        watchAssignTaskStatus(appName,taskName,worker,assignTaskStatusListener);
     }
 
 

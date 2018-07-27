@@ -34,7 +34,7 @@ public abstract class TaskPipelineTaskStatusListener {
      * @param status
      */
     private void onTaskStatusChangeCallback(String appName,String taskName,String status) throws Exception {
-        if(TaskPipelineCoreConstant.TaskStatus.DONE.status().equals(status)) {
+        if(TaskPipelineCoreConstant.TaskStatus.DONE.status().equals(status) || TaskPipelineCoreConstant.TaskStatus.NOWORKER.status().equals(status)) {
             operation.updateTaskStatus(appName, taskName, TaskPipelineCoreConstant.TaskStatus.CONSUMED.status());
         }
         onTaskStatusChange(appName,taskName,status);

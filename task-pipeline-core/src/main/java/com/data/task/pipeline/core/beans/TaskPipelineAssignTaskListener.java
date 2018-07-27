@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.ASSIGN_TASK_SEP;
+import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.HISTORY_DIR;
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.TASK_SEP;
 
 /**
@@ -39,6 +40,10 @@ public abstract class TaskPipelineAssignTaskListener {
             return;
         }
         String assignTaskName = pathChildrenCacheEvent.getData().getPath().split("/")[3];
+        //过滤history目录变化
+        if(HISTORY_DIR.replace("/","").equals(assignTaskName)){
+            return;
+        }
         String[] assignTaskNameSplitArray = assignTaskName.split(ASSIGN_TASK_SEP);
         String assignNodeName = assignTaskNameSplitArray[1];
         log.info("receive task info ",assignTaskName);

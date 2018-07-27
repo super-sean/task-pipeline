@@ -2,12 +2,11 @@ package com.data.task.pipeline.worker.plugin;
 
 import com.data.task.pipeline.core.beans.TaskPipelineAssignTaskListener;
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
+import com.data.task.pipeline.core.beans.TaskPipelineUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PreDestroy;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 /**
  * @author xinzai
@@ -26,18 +25,7 @@ public class TaskPipelineWorkerSupporter {
     public TaskPipelineWorkerSupporter(String appName,TaskPipelineCoreConfig config) {
         this.appName = appName;
         operation = new TaskPipelineWorkerOperation(appName,config);
-        nodeName = System.currentTimeMillis() + "";
-        try {
-            InetAddress addr = InetAddress.getLocalHost();
-            //获取本机ip
-            String ip=addr.getHostAddress().toString();
-            //获取本机计算机名称
-            String hostName=addr.getHostName().toString();
-            nodeName = hostName + "-" + ip + "-" + System.currentTimeMillis();
-        } catch (UnknownHostException e) {
-            log.warn("get host info exception",e);
-        }
-
+        nodeName = TaskPipelineUtils.getLocalNodeName();
         try {
             operation.registerWorker(nodeName);
         } catch (Exception e) {
