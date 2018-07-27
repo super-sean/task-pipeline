@@ -13,7 +13,7 @@ import static java.lang.Thread.sleep;
 public class WorkerRunnerTest {
 
     public static void main(String[] args) throws Exception {
-        TaskPipelineCoreConfig config = new TaskPipelineCoreConfig("192.168.1.89:2181",5000,0,5,5,10,0,20);
+        TaskPipelineCoreConfig config = new TaskPipelineCoreConfig("127.0.0.1:2181",5000,0,5,5,10,0,20);
         TaskPipelineWorkerSupporter supporter = new TaskPipelineWorkerSupporter("topn_select",config);
         TaskPipelineAssignTaskListener listener = new TaskPipelineAssignTaskListener(supporter.getAppName(),supporter.getNodeName()) {
             @Override

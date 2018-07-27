@@ -280,14 +280,12 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
     /**
      * 监听worker节点变化
      * @param appName
-     * @param node
      * @param listener
      * @throws Exception
      */
-    public void watchWorker(String appName,String node,TaskPipelineWorkerListener listener) throws Exception {
+    public void watchWorkerList(String appName,TaskPipelineWorkerListener listener) throws Exception {
         listener.setOperation(this);
-        NodeCache nodeCache = watchNode(WORKERS_PATH + appName + "/" + node, listener.getListener());
-        listener.setCache(nodeCache);
+        watchChildrenNodes(WORKERS_PATH + appName, listener.getListener());
     }
 
     /**

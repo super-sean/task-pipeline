@@ -59,7 +59,7 @@ public abstract class TaskPipelineAssignTaskListener {
 
         //检查task状态
         String status = operation.getTaskStatus(appName,taskName);
-        if(!TaskPipelineCoreConstant.TaskStatus.SUBMIT.status().equals(status)){
+        if(!TaskPipelineCoreConstant.TaskStatus.SUBMIT.status().equals(status) && !TaskPipelineCoreConstant.TaskStatus.RESUBMIT.status().equals(status)){
             //更新assignTask状态为重复分配
             operation.updateAssignTaskStatus(appName,assignTaskName, TaskPipelineCoreConstant.TaskStatus.REPEAT.status());
             return;

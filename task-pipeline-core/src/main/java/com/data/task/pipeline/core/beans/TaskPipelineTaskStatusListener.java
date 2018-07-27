@@ -20,10 +20,13 @@ public abstract class TaskPipelineTaskStatusListener {
     public TaskPipelineTaskStatusListener(String appName) {
         this.appName = appName;
         listener = () -> {
+            log.info("app:{} task:{} change",appName,taskName);
             if(cache.getCurrentData() == null){
                 return;
             }
-            onTaskStatusChangeCallback(appName,taskName,new String(cache.getCurrentData().getData()));
+            String data = new String(cache.getCurrentData().getData());
+            log.info("app:{} task:{} change data:{}",appName,taskName,data);
+            onTaskStatusChangeCallback(appName,taskName,data);
         };
     }
 

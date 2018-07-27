@@ -31,9 +31,8 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
 
     }
 
-    public void assignTaskAndWatchStatus(String appName, String taskName, String worker, TaskPipelineTaskStatusListener taskStatusListener, TaskPipelineAssignTaskStatusListener assignTaskStatusListener) throws Exception {
+    public void assignTaskAndWatchStatus(String appName, String taskName, String worker,TaskPipelineAssignTaskStatusListener assignTaskStatusListener) throws Exception {
         assignTask(appName,taskName, worker);
-        watchTaskStatus(appName,taskName,taskStatusListener);
         watchAssignTaskStatus(appName,taskName,worker,assignTaskStatusListener);
     }
 

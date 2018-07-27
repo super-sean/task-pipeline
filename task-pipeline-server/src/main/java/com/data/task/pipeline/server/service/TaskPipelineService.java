@@ -83,8 +83,8 @@ public class TaskPipelineService {
         operation.initTaskWatcher(new TaskPipelineAppTaskListener() {
             @Override
             public void onAppTaskSubmit(String appName, String taskName) {
+                watchTaskStatusAndAction(appName,taskName);
                 assignTask(appName,taskName);
-                watchTaskStatusAndArchive(appName,taskName);
             }
         });
         workerChangeActionDefinition();
@@ -104,25 +104,15 @@ public class TaskPipelineService {
     }
 
     private void workerChangeActionDefinition(String app) throws Exception {
-        List<String> workers = operation.getWorkerList(app);
-        workers.forEach(worker -> {
-            try {
-                workerChangeActionDefinition(app,worker);
-            } catch (Exception e) {
-                log.error("app:{} worker:{} change action definition exception:{}",app,worker);
-            }
-        });
-    }
-
-    private void workerChangeActionDefinition(String app,String worker) throws Exception {
-        operation.watchWorker(app, worker, new TaskPipelineWorkerListener(app, worker) {
+        operation.watchWorkerList(app, new TaskPipelineWorkerListener(app) {
             @Override
-            public void onWorkerDelete(String appName, String worker) {
+            public void onWorkerDelete(String appName, String node) {
                 try {
-                    onWorkerDeleteAction(appName,worker);
+                    onWorkerDeleteAction(appName,node);
                 } catch (Exception e) {
-                    log.error("app:{} on worker:{} delete action definition exception:{}",app,worker);
+                    log.error("app:{} on worker delete action definition exception:{}",app);
                 }
+
             }
         });
     }
@@ -229,11 +219,16 @@ public class TaskPipelineService {
         archiveAssignTask(app,assignTask);
     }
 
-    private void watchTaskStatusAndArchive(String appName, String taskName){
+    private void watchTaskStatusAndAction(String appName, String taskName){
         try {
             operation.watchTaskStatus(appName, taskName, new TaskPipelineTaskStatusListener(appName) {
                 @Override
                 public void onTaskStatusChange(String appName, String taskName, String status) {
+                    //若状态为resubmit则重新分配作业
+                    if(TaskPipelineCoreConstant.TaskStatus.RESUBMIT.status().equals(status)) {
+                        assignTask(appName,taskName);
+                        return;
+                    }
                     judgeAndArchiveTask(appName,taskName,status);
                 }
             });
@@ -264,22 +259,13 @@ public class TaskPipelineService {
                 return;
             }
 
-            TaskPipelineTaskStatusListener taskListener = new TaskPipelineTaskStatusListener(appName) {
-                @Override
-                public void onTaskStatusChange(String appName, String taskName, String status) {
-                    //若状态为resubmit则重新分配作业
-                    if(TaskPipelineCoreConstant.TaskStatus.RESUBMIT.status().equals(status)) {
-                        assignTask(appName,taskName);
-                    }
-                }
-            };
             TaskPipelineAssignTaskStatusListener assignTaskStatusListener = new TaskPipelineAssignTaskStatusListener(appName,taskName) {
                 @Override
                 public void onAssignTaskDone(String appName, String assignTaskName) {
                     archiveAssignTask(appName,assignTaskName);
                 }
             };
-            operation.assignTaskAndWatchStatus(appName,taskName, worker.get("node"),taskListener,assignTaskStatusListener );
+            operation.assignTaskAndWatchStatus(appName,taskName, worker.get("node"),assignTaskStatusListener);
             operation.updateWorkerWeight(appName,worker.get("node"),(Integer.parseInt(worker.get("weight")) + 1) + "");
         } catch (Exception e) {
             log.error("assign worker:{} for app:{} task:{} exception:{}", worker,appName,taskName,e);
