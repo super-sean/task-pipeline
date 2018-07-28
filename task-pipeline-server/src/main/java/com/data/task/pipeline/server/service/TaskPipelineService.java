@@ -2,7 +2,6 @@ package com.data.task.pipeline.server.service;
 
 import com.data.task.pipeline.core.beans.listener.TaskPipelineAppTaskListener;
 import com.data.task.pipeline.core.beans.listener.TaskPipelineFunctionAppListListener;
-import com.data.task.pipeline.core.beans.listener.TaskPipelineMasterStatusListener;
 import com.data.task.pipeline.server.beans.TaskPipelineServerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,27 +31,26 @@ public class TaskPipelineService {
         if(beMaster){
             serverActionDefinition();
         } else {
-            watchMaster();
+            operation.watchMasterChange(() -> gernericTaskPipelineAction());
         }
-
-    }
-
-    private void watchMaster() throws Exception {
-        operation.watchMaster(new TaskPipelineMasterStatusListener() {
-            @Override
-            public void onMasterStatusDelete() {
-                log.info("master disappear,going gerneric task pipeline action");
-                try {
-                    gernericTaskPipelineAction();
-                } catch (Exception e) {
-                    log.error("gerneric task pipeline action exception:{}",e);
-                }
-            }
-        });
     }
 
     private void serverActionDefinition() throws Exception {
-        //监听task app目录下的新节点变化
+        //监听task app目录下的节点变化
+        taskWatcherDefinition();
+        //监听worker变化
+        workerChangeActionDefinition();
+        //处理已经存在的任务
+        existingTaskActionDefinition();
+        //处理已经存在的作业
+        existingAssignTaskActionDefinition();
+    }
+
+    /**
+     * 监听task app目录下的节点变化
+     * @throws Exception
+     */
+    private void taskWatcherDefinition() throws Exception {
         operation.initTaskWatcher(new TaskPipelineAppTaskListener() {
             @Override
             public void onAppTaskSubmit(String appName, String taskName) {
@@ -60,13 +58,6 @@ public class TaskPipelineService {
                 operation.assignTask(appName,taskName);
             }
         });
-
-        //监听worker变化
-        workerChangeActionDefinition();
-        //处理已经存在的任务
-        existingTaskActionDefinition();
-        //处理已经存在的作业
-        existingAssignTaskActionDefinition();
     }
 
     /**

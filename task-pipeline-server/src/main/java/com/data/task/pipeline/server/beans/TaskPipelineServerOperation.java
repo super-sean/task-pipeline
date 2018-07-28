@@ -153,31 +153,29 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
     public void existingAssignTaskActionDefinition(String app) throws Exception {
         List<String> assignTaskList= getAssignTaskList(app);
         List<String> nodes = getWorkerList(app);
-        assignTaskList.forEach(assignTask -> {
-            try {
-                existingAssignTaskActionDefinition(app,assignTask,nodes);
-            } catch (Exception e) {
-                log.error("existing assign app:{} assignTask:{} action init exception:{}",app,assignTask,e);
-            }
-        });
+        assignTaskList.forEach(assignTask -> existingAssignTaskActionDefinition(app,assignTask,nodes));
     }
 
-    public void existingAssignTaskActionDefinition(String app,String assignTask,List<String> workerNodes) throws Exception {
-        String status = getAssignTaskStatus(app,assignTask);
-        Map<String,String> assignInfoMap = getAssignTaskWorkerInfo(assignTask);
-        //归档进行中的已经完成或app节点已经消失的作业
-        if(TaskPipelineCoreConstant.TaskStatus.DONE.status().equals(status) ||
-                !checkAppNodeExist(app,assignInfoMap.get(APP_Node_NAME))){
-            archiveAssignTask(app,assignTask);
-            return;
+    public void existingAssignTaskActionDefinition(String app,String assignTask,List<String> workerNodes){
+        try {
+            String status = getAssignTaskStatus(app,assignTask);
+            Map<String,String> assignInfoMap = getAssignTaskWorkerInfo(assignTask);
+            //归档进行中的已经完成或app节点已经消失的作业
+            if(TaskPipelineCoreConstant.TaskStatus.DONE.status().equals(status) ||
+                    !checkAppNodeExist(app,assignInfoMap.get(APP_Node_NAME))){
+                archiveAssignTask(app,assignTask);
+                return;
+            }
+            //若workerNodes为空列表则跳过判断node是否存在的验证
+            if(workerNodes.contains(assignInfoMap.get(WORKER))){
+                return;
+            }
+            //处理作业的worker节点已经消失，则重新更新任务状态为resubmit并归档作业
+            updateTaskStatus(app,assignInfoMap.get(TASK), TaskPipelineCoreConstant.TaskStatus.RESUBMIT.status());
+            archiveAssignTaskToWorker(app,assignTask);
+        } catch (Exception e) {
+            log.error("existing app:{} assigntask:{} workers:{} action definition exception:{}",app,assignTask,workerNodes);
         }
-        //若workerNodes为空列表则跳过判断node是否存在的验证
-        if(workerNodes.contains(assignInfoMap.get(WORKER))){
-            return;
-        }
-        //处理作业的worker节点已经消失，则重新更新任务状态为resubmit并归档作业
-        updateTaskStatus(app,assignInfoMap.get(TASK), TaskPipelineCoreConstant.TaskStatus.RESUBMIT.status());
-        archiveAssignTaskToWorker(app,assignTask);
     }
 
     public void archiveAssignTaskToWorker(String appName, String assignTaskName){
@@ -193,32 +191,30 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
     public void existingTaskActionDefinition(String app) throws Exception {
         List<String> taskList = getTaskList(app);
         List<String> nodes = getAppNodeList(app);
-        taskList.forEach(task -> {
-            try {
-                existingTaskActionDefinition(app,task,nodes);
-            } catch (Exception e) {
-                log.error("existing app:{} task:{} action init exception:{}",app,task,e);
-            }
-        });
+        taskList.forEach(task ->existingTaskActionDefinition(app,task,nodes));
     }
 
-    private void existingTaskActionDefinition(String app,String task,List<String> appNodes) throws Exception {
-        //如果提交任务的app节点已经消失,标识为missapp并归档
-        if(!appNodes.contains(getTaskSubmitAppNode(task))){
-            updateTaskStatus(app,task, TaskPipelineCoreConstant.TaskStatus.MISSAPP.status());
-            archiveTask(app,task);
-            return;
+    private void existingTaskActionDefinition(String app,String task,List<String> appNodes){
+        try {
+            //如果提交任务的app节点已经消失,标识为missapp并归档
+            if(!appNodes.contains(getTaskSubmitAppNode(task))){
+                updateTaskStatus(app,task, TaskPipelineCoreConstant.TaskStatus.MISSAPP.status());
+                archiveTask(app,task);
+                return;
+            }
+
+            String status = getTaskStatus(app,task);
+            //如果是已经消费或者失去app连接的任务则进行归档
+            judgeAndArchiveTask(app,task,status);
+
+            if(!TaskPipelineCoreConstant.TaskStatus.SUBMIT.status().equals(status)){
+                return;
+            }
+
+            assignTask(app,task);
+        } catch (Exception e) {
+            log.error("existing app:{} task:{} action init exception:{}",app,task,e);
         }
-
-        String status = getTaskStatus(app,task);
-        //如果是已经消费或者失去app连接的任务则进行归档
-        judgeAndArchiveTask(app,task,status);
-
-        if(!TaskPipelineCoreConstant.TaskStatus.SUBMIT.status().equals(status)){
-            return;
-        }
-
-        assignTask(app,task);
     }
 
 
@@ -226,26 +222,34 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
         watchWorkerList(app, new TaskPipelineWorkerListener(app) {
             @Override
             public void onWorkerDelete(String appName, String node) {
-                try {
                     onWorkerDeleteAction(appName,node);
+            }
+        });
+    }
+
+    private void onWorkerDeleteAction(String appName, String worker) {
+        try {
+            getAssignTaskList(appName,worker)
+                    .forEach(assignTask -> existingAssignTaskActionDefinition(appName, assignTask, Collections.emptyList()));
+        } catch (Exception e) {
+            log.error("app:{} on worker delete action definition exception:{}",appName);
+        }
+    }
+
+
+    public void watchMasterChange(MasterChangeAction action) throws Exception {
+        watchMaster(new TaskPipelineMasterStatusListener() {
+            @Override
+            public void onMasterStatusDelete() {
+                log.info("master disappear,going gerneric task pipeline action");
+                try {
+                    action.onMasterChange();
                 } catch (Exception e) {
-                    log.error("app:{} on worker delete action definition exception:{}",app);
+                    log.error("gerneric task pipeline action exception:{}",e);
                 }
-
             }
         });
     }
-
-    private void onWorkerDeleteAction(String appName, String worker) throws Exception {
-        getAssignTaskList(appName,worker).forEach(assignTask -> {
-            try {
-                existingAssignTaskActionDefinition(appName, assignTask, Collections.emptyList());
-            } catch (Exception e) {
-                log.error("app:{} on worker:{} delete action definition exception:{}",appName,worker);
-            }
-        });
-    }
-
 
     public boolean registerMaster() throws Exception {
         String nodeName = TaskPipelineUtils.getLocalNodeName();
@@ -267,4 +271,6 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
         return beMaster;
 
     }
+
+
 }
