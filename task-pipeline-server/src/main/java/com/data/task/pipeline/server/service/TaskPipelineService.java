@@ -36,6 +36,8 @@ public class TaskPipelineService {
     }
 
     private void serverActionDefinition() throws Exception {
+        //初始化目录
+        operation.initNamespacePath();
         //监听task app目录下的节点变化
         taskWatcherDefinition();
         //监听worker变化

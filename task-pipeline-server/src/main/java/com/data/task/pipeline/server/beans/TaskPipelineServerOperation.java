@@ -12,9 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.APP_Node_NAME;
-import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.TASK;
-import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.WORKER;
+import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.*;
 import static java.lang.Thread.sleep;
 
 /**
@@ -27,6 +25,24 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
 
     public TaskPipelineServerOperation(TaskPipelineCoreConfig config) {
         super(config);
+    }
+
+    /**
+     * 初始化系统目录
+     * @throws Exception
+     */
+    public void initNamespacePath() throws Exception {
+        checkPathAndCreate(APPS_PATH.substring(0,APPS_PATH.length() - 1));
+        checkPathAndCreate(WORKERS_PATH.substring(0,WORKERS_PATH.length() - 1));
+        checkPathAndCreate(TASKS_PATH.substring(0,TASKS_PATH.length() - 1));
+        checkPathAndCreate(ASSIGN_PATH.substring(0,ASSIGN_PATH.length() - 1));
+
+    }
+
+    private void checkPathAndCreate(String path) throws Exception {
+        if(!checkNodeExist(path)){
+            createNode(path,"");
+        }
     }
 
     public void initTaskWatcher(TaskPipelineAppTaskListener listener) throws Exception {
