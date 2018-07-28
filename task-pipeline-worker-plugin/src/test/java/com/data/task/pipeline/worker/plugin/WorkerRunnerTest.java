@@ -14,7 +14,7 @@ public class WorkerRunnerTest {
 
     public static void main(String[] args) throws Exception {
         TaskPipelineCoreConfig config = new TaskPipelineCoreConfig("127.0.0.1:2181",5000,0,5,5,10,0,20);
-        TaskPipelineWorkerSupporter supporter = new TaskPipelineWorkerSupporter("topn_select",config);
+        TaskPipelineWorkerSupporter supporter = new TaskPipelineWorkerSupporter("test",config);
         TaskPipelineAssignTaskListener listener = new TaskPipelineAssignTaskListener(supporter.getAppName(),supporter.getNodeName()) {
             @Override
             public void onAssignTaskChange(String appName, String taskName, String params,String node) {
