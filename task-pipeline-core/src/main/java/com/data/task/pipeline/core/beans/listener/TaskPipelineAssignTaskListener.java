@@ -1,5 +1,7 @@
-package com.data.task.pipeline.core.beans;
+package com.data.task.pipeline.core.beans.listener;
 
+import com.data.task.pipeline.core.beans.TaskPipelineCoreConstant;
+import com.data.task.pipeline.core.beans.operation.TaskPipelineOperation;
 import com.sun.deploy.util.StringUtils;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
@@ -86,7 +88,7 @@ public abstract class TaskPipelineAssignTaskListener {
         return listener;
     }
 
-    protected void setOperation(TaskPipelineOperation operation) {
+    public void setOperation(TaskPipelineOperation operation) {
         this.operation = operation;
     }
 }

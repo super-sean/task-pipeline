@@ -1,5 +1,7 @@
-package com.data.task.pipeline.core.beans;
+package com.data.task.pipeline.core.beans.listener;
 
+import com.data.task.pipeline.core.beans.TaskPipelineCoreConstant;
+import com.data.task.pipeline.core.beans.operation.TaskPipelineOperation;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.slf4j.Logger;
@@ -75,7 +77,7 @@ public abstract class TaskPipelineTaskStatusListener {
         return listener;
     }
 
-    protected void setOperation(TaskPipelineOperation operation) {
+    public void setOperation(TaskPipelineOperation operation) {
         this.operation = operation;
     }
 

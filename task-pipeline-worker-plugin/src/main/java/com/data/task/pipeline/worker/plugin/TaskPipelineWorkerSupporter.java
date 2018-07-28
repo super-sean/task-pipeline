@@ -1,12 +1,10 @@
 package com.data.task.pipeline.worker.plugin;
 
-import com.data.task.pipeline.core.beans.TaskPipelineAssignTaskListener;
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.TaskPipelineUtils;
+import com.data.task.pipeline.core.beans.listener.TaskPipelineAssignTaskListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.annotation.PreDestroy;
 
 /**
  * @author xinzai
@@ -53,11 +51,6 @@ public class TaskPipelineWorkerSupporter {
         return nodeName;
     }
 
-    @PreDestroy
-    public void destroy() throws Exception {
-        operation.removeAppNode(appName,nodeName);
-
-    }
 }
 
 

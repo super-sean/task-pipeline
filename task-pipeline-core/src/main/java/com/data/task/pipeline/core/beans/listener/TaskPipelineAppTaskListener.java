@@ -1,5 +1,6 @@
-package com.data.task.pipeline.core.beans;
+package com.data.task.pipeline.core.beans.listener;
 
+import com.data.task.pipeline.core.beans.operation.TaskPipelineOperation;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.slf4j.Logger;
@@ -41,11 +42,11 @@ public abstract class TaskPipelineAppTaskListener {
      */
     public abstract void onAppTaskSubmit(String appName,String taskName);
 
-    protected PathChildrenCacheListener getListener(){
+    public PathChildrenCacheListener getListener(){
         return listener;
     }
 
-    protected void setOperation(TaskPipelineOperation operation){
+    public void setOperation(TaskPipelineOperation operation){
         this.operation = operation;
     }
 

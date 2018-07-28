@@ -1,5 +1,7 @@
-package com.data.task.pipeline.core.beans;
+package com.data.task.pipeline.core.beans.operation;
 
+import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
+import com.data.task.pipeline.core.beans.TaskPipelineCuratorFrameworkFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.NodeCache;

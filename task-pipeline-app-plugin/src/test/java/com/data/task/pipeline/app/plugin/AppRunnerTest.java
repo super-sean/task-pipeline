@@ -2,7 +2,7 @@ package com.data.task.pipeline.app.plugin;
 
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConstant;
-import com.data.task.pipeline.core.beans.TaskPipelineTaskStatusListener;
+import com.data.task.pipeline.core.beans.listener.TaskPipelineTaskStatusListener;
 
 /**
  * @author xinzai

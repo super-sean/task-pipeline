@@ -1,8 +1,8 @@
 package com.data.task.pipeline.app.plugin;
 
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
-import com.data.task.pipeline.core.beans.TaskPipelineOperation;
-import com.data.task.pipeline.core.beans.TaskPipelineTaskStatusListener;
+import com.data.task.pipeline.core.beans.operation.TaskPipelineOperation;
+import com.data.task.pipeline.core.beans.listener.TaskPipelineTaskStatusListener;
 
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.TASKS_PATH;
 
