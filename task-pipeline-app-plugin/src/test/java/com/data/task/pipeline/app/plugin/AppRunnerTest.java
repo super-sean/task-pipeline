@@ -11,7 +11,7 @@ import com.data.task.pipeline.core.beans.TaskPipelineTaskStatusListener;
 public class AppRunnerTest {
     public static void main(String[] args) throws Exception {
         TaskPipelineCoreConfig config = new TaskPipelineCoreConfig("127.0.0.1:2181",1000,0,5,5,10,0,20);
-        TaskPipelineAppSupporter supporter = new TaskPipelineAppSupporter("test",config);
+        TaskPipelineAppSupporter supporter = new TaskPipelineAppSupporter("test1",config);
         TaskPipelineTaskStatusListener listener = new TaskPipelineTaskStatusListener(supporter.getAppName()) {
             @Override
             public void onTaskStatusChange(String appName, String taskName, String status) {

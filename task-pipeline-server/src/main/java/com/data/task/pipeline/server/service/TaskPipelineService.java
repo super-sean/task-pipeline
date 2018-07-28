@@ -87,18 +87,35 @@ public class TaskPipelineService {
                 assignTask(appName,taskName);
             }
         });
+
+        //监听worker变化
         workerChangeActionDefinition();
+        //处理已经存在的任务
         existingTaskActionDefinition();
+        //处理已经存在的作业
         existingAssignTaskActionDefinition();
     }
 
     private void workerChangeActionDefinition() throws Exception {
+        //监听已经存在的业务worker
         List<String> apps = operation.getWorkerAppList();
         apps.forEach(app ->{
             try {
                 workerChangeActionDefinition(app);
             } catch (Exception e) {
                 log.error("app:{} worker change action definition exception:{}",app,e);
+            }
+        });
+
+        //监听新增业务的worker
+        operation.watchWorkerAppList(new TaskPipelineFunctionAppListListener() {
+            @Override
+            public void onAppAdd(String appName) {
+                try {
+                    workerChangeActionDefinition(appName);
+                } catch (Exception e) {
+                    log.error("new app:{} worker change action definition exception:{}",appName,e);
+                }
             }
         });
     }

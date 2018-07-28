@@ -1,7 +1,6 @@
 package com.data.task.pipeline.core.beans;
 
 import org.apache.curator.framework.recipes.cache.NodeCache;
-import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -317,8 +316,20 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @param listener
      * @throws Exception
      */
-    public void watchTaskAppList(PathChildrenCacheListener listener) throws Exception {
-        watchChildrenNodes(TASKS_PATH,listener);
+    public void watchTaskAppList(TaskPipelineFunctionAppListListener listener) throws Exception {
+        listener.setOperation(this);
+        watchChildrenNodes(TASKS_PATH.substring(0,TASKS_PATH.length() - 1),listener.getListener());
+    }
+
+
+    /**
+     * 监听worker所属app列表变化
+     * @param listener
+     * @throws Exception
+     */
+    public void watchWorkerAppList(TaskPipelineFunctionAppListListener listener) throws Exception {
+        listener.setOperation(this);
+        watchChildrenNodes(WORKERS_PATH.substring(0,WORKERS_PATH.length() - 1),listener.getListener());
     }
 
     /**

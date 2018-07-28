@@ -29,6 +29,22 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
             }
         });
 
+        //监听task app新目录下的节点变化
+        watchTaskAppList(new TaskPipelineFunctionAppListListener() {
+            @Override
+            public void onAppAdd(String appName) {
+                try {
+                    watchTaskList(appName, listener);
+                } catch (Exception e) {
+                    log.error("watch new app:{} task list exception:{}",appName,e);
+                }
+            }
+        });
+
+    }
+
+    public void watchNewAppTaskList(TaskPipelineAppTaskListener listener){
+
     }
 
     public void assignTaskAndWatchStatus(String appName, String taskName, String worker,TaskPipelineAssignTaskStatusListener assignTaskStatusListener) throws Exception {
