@@ -2,7 +2,7 @@ package com.data.task.pipeline.core.beans.listener;
 
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConstant;
 import com.data.task.pipeline.core.beans.operation.TaskPipelineOperation;
-import com.sun.deploy.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent;
 import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.slf4j.Logger;
@@ -10,9 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
-import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.ASSIGN_TASK_SEP;
-import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.HISTORY_DIR;
-import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.TASK_SEP;
+import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.*;
 
 /**
  * @author xinzai
