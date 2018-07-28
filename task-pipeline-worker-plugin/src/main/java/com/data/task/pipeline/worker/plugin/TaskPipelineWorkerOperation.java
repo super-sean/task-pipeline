@@ -1,6 +1,6 @@
 package com.data.task.pipeline.worker.plugin;
 
-import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
+import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.operation.TaskPipelineOperation;
 
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.ASSIGN_PATH;

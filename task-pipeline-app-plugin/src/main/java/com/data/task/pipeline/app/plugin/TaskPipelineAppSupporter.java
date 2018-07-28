@@ -1,6 +1,6 @@
 package com.data.task.pipeline.app.plugin;
 
-import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
+import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.TaskPipelineUtils;
 import com.data.task.pipeline.core.beans.listener.TaskPipelineTaskStatusListener;
 import org.slf4j.Logger;

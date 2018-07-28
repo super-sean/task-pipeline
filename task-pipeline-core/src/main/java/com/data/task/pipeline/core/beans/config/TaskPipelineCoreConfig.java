@@ -1,14 +1,12 @@
-package com.data.task.pipeline.server.config;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
+package com.data.task.pipeline.core.beans.config;
 
 /**
  * @author xinzai
- * @create 2018-07-25 下午4:26
+ * @create 2018-07-24 上午10:01
  **/
+public class TaskPipelineCoreConfig {
 
-@ConfigurationProperties(prefix = "task.pipeline")
-public class TaskPipelineServerConfig {
+
     private String zkConnectStr;
 
     private int sessionTimeout;

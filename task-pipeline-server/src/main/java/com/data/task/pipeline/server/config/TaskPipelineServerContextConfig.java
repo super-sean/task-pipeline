@@ -1,8 +1,8 @@
 package com.data.task.pipeline.server.config;
 
-import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
+import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.server.beans.TaskPipelineServerOperation;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,22 +12,22 @@ import org.springframework.context.annotation.Configuration;
  * @create 2018-07-25 下午4:31
  **/
 @Configuration
-@EnableConfigurationProperties(TaskPipelineServerConfig.class)
+@ConfigurationProperties(prefix = "task.pipeline")
+@EnableConfigurationProperties(TaskPipelineServerContextConfig.class)
 public class TaskPipelineServerContextConfig {
-    @Autowired
-    private TaskPipelineServerConfig config;
+
+    private TaskPipelineCoreConfig config;
 
     @Bean
     public TaskPipelineServerOperation getTaskPipelineServerOperation(){
-        return new TaskPipelineServerOperation(new TaskPipelineCoreConfig(
-                config.getZkConnectStr(),
-                config.getSessionTimeout(),
-                config.getBaseSleepTimeMs(),
-                config.getMaxRetries(),
-                config.getCorePoolSize(),
-                config.getMaxthreadPoolSize(),
-                config.getKeepApiveTime(),
-                config.getQueueSize()
-        ));
+        return new TaskPipelineServerOperation(config);
+    }
+
+    public TaskPipelineCoreConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(TaskPipelineCoreConfig config) {
+        this.config = config;
     }
 }

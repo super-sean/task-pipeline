@@ -1,12 +1,13 @@
 task:
   pipeline:
-    zkConnectStr: 127.0.0.1:2181
-    sessionTimeout: 5000
-    baseSleepTimeMs: 0
-    maxRetries: 5
-    corePoolSize: 5
-    maxthreadPoolSize: 10
-    keepApiveTime: 0
-    queueSize: 20
+    config:
+      zkConnectStr: 127.0.0.1:2181
+      sessionTimeout: 5000
+      baseSleepTimeMs: 0
+      maxRetries: 5
+      corePoolSize: 5
+      maxthreadPoolSize: 10
+      keepApiveTime: 0
+      queueSize: 20
 logging:
   path: log/

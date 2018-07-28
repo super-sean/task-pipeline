@@ -1,6 +1,6 @@
 package com.data.task.pipeline.core.beans.operation;
 
-import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
+import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.listener.*;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.zookeeper.CreateMode;

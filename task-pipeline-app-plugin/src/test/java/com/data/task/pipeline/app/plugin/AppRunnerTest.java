@@ -1,6 +1,6 @@
 package com.data.task.pipeline.app.plugin;
 
-import com.data.task.pipeline.core.beans.TaskPipelineCoreConfig;
+import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConstant;
 import com.data.task.pipeline.core.beans.listener.TaskPipelineTaskStatusListener;
 
@@ -10,7 +10,15 @@ import com.data.task.pipeline.core.beans.listener.TaskPipelineTaskStatusListener
  **/
 public class AppRunnerTest {
     public static void main(String[] args) throws Exception {
-        TaskPipelineCoreConfig config = new TaskPipelineCoreConfig("127.0.0.1:2181",1000,0,5,5,10,0,20);
+        TaskPipelineCoreConfig config = new TaskPipelineCoreConfig();
+        config.setZkConnectStr("127.0.0.1:2181");
+        config.setSessionTimeout(1000);
+        config.setBaseSleepTimeMs(0);
+        config.setMaxRetries(5);
+        config.setCorePoolSize(5);
+        config.setMaxthreadPoolSize(10);
+        config.setKeepApiveTime(0);
+        config.setQueueSize(20);
         TaskPipelineAppSupporter supporter = new TaskPipelineAppSupporter("test1",config);
         TaskPipelineTaskStatusListener listener = new TaskPipelineTaskStatusListener(supporter.getAppName()) {
             @Override
