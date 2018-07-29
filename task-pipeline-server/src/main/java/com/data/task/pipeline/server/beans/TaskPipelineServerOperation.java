@@ -1,6 +1,7 @@
 package com.data.task.pipeline.server.beans;
 
-import com.data.task.pipeline.core.beans.*;
+import com.data.task.pipeline.core.beans.TaskPipelineCoreConstant;
+import com.data.task.pipeline.core.beans.TaskPipelineUtils;
 import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.listener.*;
 import com.data.task.pipeline.core.beans.operation.TaskPipelineOperation;
@@ -11,7 +12,6 @@ import org.springframework.util.StringUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.*;
 import static java.lang.Thread.sleep;
@@ -81,39 +81,32 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
         updateTaskStatus(appName,taskName, TaskPipelineCoreConstant.TaskStatus.NOWORKER.status());
     }
 
-    public Map<String,String> getWorker(String appName) throws Exception {
+    private WorkerInfo getWorkerInfo(String appName,String worker){
+        try {
+            return new WorkerInfo(worker,getWorkerWeight(appName, worker));
+        } catch (Exception e) {
+            log.error("get app:{} worker:{} info exception:{}",appName,worker,e);
+        }
+        return new WorkerInfo(worker, Integer.MAX_VALUE);
+    }
+
+    public WorkerInfo getWorker(String appName) throws Exception {
         List<String> workers = getWorkerList(appName);
         //间隔10秒重新获取一次
         if(workers.size() == 0){
             sleep(10000);
             workers = getWorkerList(appName);
         }
-        final int[] weight = {Integer.MAX_VALUE};
-        final String[] workerNode = {""};
-        Map<String,String> worker = new WeakHashMap<>();
         //获取权重最小的第一个节点作为worker
-        workers.forEach(w -> {
-            try {
-                int tmpWeight = getWorkerWeight(appName,w);
-                if(tmpWeight >= weight[0]) {
-                    return;
-                }
-                weight[0] = tmpWeight;
-                workerNode[0] = w;
-                worker.put("weight",weight[0] + "");
-                worker.put("node",workerNode[0]);
-            } catch (Exception e) {
-                log.error("get app:{} worker to assign exception:{}",appName,e);
-            }
-        });
+        WorkerInfo worker = workers.stream().map(w -> getWorkerInfo(appName,w)).min((w1,w2) -> w1.getWeight() < w2.getWeight()?1:0).get();
         return worker;
     }
 
     public void assignTask(String appName, String taskName){
-        Map<String,String> worker = new WeakHashMap<>();
+        WorkerInfo worker = null;
         try {
             worker = getWorker(appName);
-            if(StringUtils.isEmpty(worker.get("node"))){
+            if(StringUtils.isEmpty(worker.getNode())){
                 log.warn("no worker for app:{} task:{}",appName,taskName);
                 noWorkerAssignResponse(appName,taskName);
                 return;
@@ -129,8 +122,8 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
                     }
                 }
             };
-            assignTaskAndWatchStatus(appName,taskName, worker.get("node"),assignTaskStatusListener);
-            updateWorkerWeight(appName,worker.get("node"),(Integer.parseInt(worker.get("weight")) + 1) + "");
+            assignTaskAndWatchStatus(appName,taskName, worker.getNode(),assignTaskStatusListener);
+            updateWorkerWeight(appName,worker.getNode(),(worker.getWeight() + 1) + "");
         } catch (Exception e) {
             log.error("assign worker:{} for app:{} task:{} exception:{}", worker,appName,taskName,e);
         }

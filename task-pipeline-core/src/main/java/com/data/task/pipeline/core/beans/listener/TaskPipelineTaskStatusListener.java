@@ -22,8 +22,8 @@ public abstract class TaskPipelineTaskStatusListener {
     public TaskPipelineTaskStatusListener(String appName) {
         this.appName = appName;
         listener = () -> {
-            log.info("app:{} task:{} change",appName,taskName);
             if(cache.getCurrentData() == null){
+                log.info("app:{} task:{} change",appName,taskName);
                 return;
             }
             String data = new String(cache.getCurrentData().getData());
