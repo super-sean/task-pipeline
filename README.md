@@ -68,7 +68,6 @@ worker断线重新分配任务流程
 ![operation类图关系](readmeimg/operation_class.png)
 baseOperation为zk的基本操作，operation为倾向原子性业务操作，分角色扩展的operation如serverOperation为封装角色实现本身的组合操作  
 监听器主要有以下监听器实现  
-{% asset_img 监听器的抽象类.png  监听器的抽象类%}
 ![监听器的抽象类](readmeimg/listener_class.png)
 每个角色都是基于以上两个核心模块加以逻辑处理来实现自己的功能
 
