@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.data</groupId>
+	<groupId>com.github.super-sean</groupId>
 	<artifactId>task-pipeline</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
@@ -63,4 +63,41 @@
 			</properties>
 		</profile>
 	</profiles>
+
+
+
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<url> https://github.com/super-sean/task-pipeline</url>
+		<connection>https://github.com/super-sean/task-pipeline.git</connection>
+		<developerConnection>https://github.com/super-sean/task-pipeline</developerConnection>
+	</scm>
+
+	<developers>
+		<developer>
+			<name>sean</name>
+			<email>zhixin.luo2011@gmail.com</email>
+			<url>https://github.com/super-sean/task-pipeline</url>
+		</developer>
+	</developers>
+
+	<distributionManagement>
+		<repository>
+			<id>sonatype-nexus-snapshots</id>
+			<name>releases</name>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+			<uniqueVersion>true</uniqueVersion>
+		</repository>
+		<snapshotRepository>
+			<id>sonatype-nexus-staging</id>
+			<name>snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
