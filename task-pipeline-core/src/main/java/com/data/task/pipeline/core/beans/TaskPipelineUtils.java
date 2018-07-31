@@ -1,5 +1,6 @@
 package com.data.task.pipeline.core.beans;
 
+import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,5 +26,10 @@ public class TaskPipelineUtils {
             log.warn("get host info exception",e);
         }
         return System.currentTimeMillis() + "";
+    }
+
+    public static String getDigestUserPwd(String id) throws Exception {
+        // 加密明文密码
+        return DigestAuthenticationProvider.generateDigest(id);
     }
 }

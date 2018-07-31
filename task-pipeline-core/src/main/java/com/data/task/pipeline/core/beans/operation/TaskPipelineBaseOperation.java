@@ -85,7 +85,9 @@ public abstract class TaskPipelineBaseOperation {
         cache.close();
     }
 
-
+    public CuratorFramework getCf() {
+        return cf;
+    }
 
     @PreDestroy
     public void destory(){

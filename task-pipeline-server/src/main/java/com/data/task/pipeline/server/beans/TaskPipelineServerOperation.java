@@ -5,6 +5,8 @@ import com.data.task.pipeline.core.beans.TaskPipelineUtils;
 import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.listener.*;
 import com.data.task.pipeline.core.beans.operation.TaskPipelineOperation;
+import org.apache.curator.framework.recipes.leader.LeaderLatch;
+import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -264,25 +266,10 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
         });
     }
 
-    public boolean registerMaster() throws Exception {
-        String nodeName = TaskPipelineUtils.getLocalNodeName();
-        boolean beMaster = false;
-        //避免由于异常没有注册成功，导致没有master节点
-        while (!checkMasterExist()) {
-            try {
-                registerMasterNode(nodeName);
-                beMaster = true;
-            } catch (Exception e) {
-                log.info("registerMasterNode failed,this node will be standby,waiting to be master");
-            }
-            //出现异常每5秒重试注册master
-            if(!beMaster && !checkMasterExist()){
-                sleep(5000);
-            }
-        }
-
-        return beMaster;
-
+    public void registerMaster(LeaderLatchListener listener) throws Exception {
+        final LeaderLatch leaderLatch = new LeaderLatch(getCf(), MASTER_NODE, TaskPipelineUtils.getLocalNodeName());
+        leaderLatch.addListener(listener);
+        leaderLatch.start();
     }
 
 

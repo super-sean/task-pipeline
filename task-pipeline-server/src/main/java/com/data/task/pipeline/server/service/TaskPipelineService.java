@@ -3,6 +3,7 @@ package com.data.task.pipeline.server.service;
 import com.data.task.pipeline.core.beans.listener.TaskPipelineAppTaskListener;
 import com.data.task.pipeline.core.beans.listener.TaskPipelineFunctionAppListListener;
 import com.data.task.pipeline.server.beans.TaskPipelineServerOperation;
+import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +26,22 @@ public class TaskPipelineService {
     @PostConstruct
     public void gernericTaskPipelineAction() throws Exception {
         //进行master抢夺，若失败进行master监听等待接手
-        boolean beMaster = operation.registerMaster();
+        operation.registerMaster(new LeaderLatchListener() {
+            @Override
+            public void isLeader() {
+                log.info("taking the leadership. begin to work.");
+                try {
+                    serverActionDefinition();
+                } catch (Exception e) {
+                    log.error("server action definition exception",e);
+                }
+            }
 
-        //初始化基本行为定义
-        if(beMaster){
-            serverActionDefinition();
-        } else {
-            operation.watchMasterChange(() -> gernericTaskPipelineAction());
-        }
+            @Override
+            public void notLeader() {
+                log.info("relinquishing the leadership.begin to await.");
+            }
+        });
     }
 
     private void serverActionDefinition() throws Exception {
