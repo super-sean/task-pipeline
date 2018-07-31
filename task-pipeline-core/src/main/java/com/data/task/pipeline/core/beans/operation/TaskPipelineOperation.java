@@ -241,12 +241,6 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
     }
 
 
-    public void watchMaster(TaskPipelineMasterStatusListener listener) throws Exception {
-        listener.setOperation(this);
-        NodeCache nodeCache = watchNode(MASTER_NODE,listener.getListener());
-        listener.setCache(nodeCache);
-    }
-
     /**
      * 监听任务状态变化
      * @param appName

@@ -251,21 +251,6 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
         }
     }
 
-
-    public void watchMasterChange(MasterChangeAction action) throws Exception {
-        watchMaster(new TaskPipelineMasterStatusListener() {
-            @Override
-            public void onMasterStatusDelete() {
-                log.info("master disappear,going gerneric task pipeline action");
-                try {
-                    action.onMasterChange();
-                } catch (Exception e) {
-                    log.error("gerneric task pipeline action exception:{}",e);
-                }
-            }
-        });
-    }
-
     public void registerMaster(LeaderLatchListener listener) throws Exception {
         final LeaderLatch leaderLatch = new LeaderLatch(getCf(), MASTER_NODE, TaskPipelineUtils.getLocalNodeName());
         leaderLatch.addListener(listener);
