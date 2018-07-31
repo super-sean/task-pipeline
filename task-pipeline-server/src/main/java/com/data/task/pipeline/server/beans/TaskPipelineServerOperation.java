@@ -116,6 +116,9 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
                 @Override
                 public void onAssignTaskDone(String appName, String assignTaskName) {
                     try {
+                        String worker = getAssignTaskWorkerInfo(assignTaskName).get(WORKER);
+                        //完成任务后worker权重减一
+                        updateWorkerWeight(appName,worker,(getWorkerWeight(appName,worker) - 1) + "");
                         archiveAssignTask(appName,assignTaskName);
                     } catch (Exception e) {
                         log.warn("archive app:{} assign Task:{} exception:{}",appName,assignTaskName,e);
