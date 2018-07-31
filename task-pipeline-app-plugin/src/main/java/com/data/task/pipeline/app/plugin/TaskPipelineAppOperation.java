@@ -8,7 +8,7 @@ import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.TASKS_P
 
 /**
  * @author xinzai
- * @create 2018-07-24 下午3:27
+ * create 2018-07-24 下午3:27
  **/
 public class TaskPipelineAppOperation extends TaskPipelineOperation {
     private String appName;

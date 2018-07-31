@@ -6,7 +6,7 @@ import com.data.task.pipeline.core.beans.listener.TaskPipelineTaskStatusListener
 
 /**
  * @author xinzai
- * @create 2018-07-23 下午2:22
+ * create 2018-07-23 下午2:22
  **/
 public class AppRunnerTest {
     public static void main(String[] args) throws Exception {

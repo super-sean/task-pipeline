@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @author xinzai
- * @create 2018-07-23 下午2:17
+ * create 2018-07-23 下午2:17
  **/
 public class TaskPipelineAppSupporter {
 
