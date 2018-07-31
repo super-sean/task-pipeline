@@ -7,6 +7,11 @@ import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
+import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.APP;
+import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.SERVER;
+
 /**
  * @author xinzai
  * @create 2018-07-24 下午5:13
@@ -18,8 +23,11 @@ public abstract class TaskPipelineTaskStatusListener {
     private NodeCache cache;
     private NodeCacheListener listener;
     private TaskPipelineOperation operation;
+    private String platform;
+    private String result;
 
-    public TaskPipelineTaskStatusListener(String appName) {
+    public TaskPipelineTaskStatusListener(String platform,String appName) {
+        this.platform = platform;
         this.appName = appName;
         listener = () -> {
             if(cache.getCurrentData() == null){
@@ -39,22 +47,31 @@ public abstract class TaskPipelineTaskStatusListener {
      * @param status
      */
     private void onTaskStatusChangeCallback(String appName,String taskName,String status) throws Exception {
-        if(TaskPipelineCoreConstant.TaskStatus.DONE.status().equals(status) || TaskPipelineCoreConstant.TaskStatus.NOWORKER.status().equals(status)) {
+        boolean isAppDone = TaskPipelineCoreConstant.TaskStatus.DONE.status().equals(status) || TaskPipelineCoreConstant.TaskStatus.NOWORKER.status().equals(status);
+        if(APP.equals(platform) && isAppDone) {
             operation.updateTaskStatus(appName, taskName, TaskPipelineCoreConstant.TaskStatus.CONSUMED.status());
+            storeResult();
+            shutdown();
+        }
+        boolean isServerDone = TaskPipelineCoreConstant.TaskStatus.CONSUMED.status().equals(status) || TaskPipelineCoreConstant.TaskStatus.MISSAPP.status().equals(status);
+        if(SERVER.equals(platform) && isServerDone) {
+            shutdown();
         }
         onTaskStatusChange(appName,taskName,status);
     }
 
-    public String getTaskResult() {
-        String result = "";
+    private void storeResult(){
         try {
             if(!operation.checkTaskResultExist(appName,taskName)){
-                return result;
+                result = "";
             }
             result = operation.getTaskResult(appName,taskName);
         } catch (Exception e) {
             log.error("task pipeline app:{} get task:{} exception:{}",appName,taskName,e);
         }
+    }
+
+    public String getTaskResult() {
         return result;
     }
     /**
@@ -87,5 +104,16 @@ public abstract class TaskPipelineTaskStatusListener {
 
     public String getTaskName() {
         return taskName;
+    }
+
+    public void shutdown(){
+        try {
+            operation.removeListener(cache,listener);
+            operation = null;
+            listener = null;
+            cache = null;
+        } catch (IOException e) {
+            log.error("task status listener app:{} task:{} remove exception",appName,taskName,e);
+        }
     }
 }

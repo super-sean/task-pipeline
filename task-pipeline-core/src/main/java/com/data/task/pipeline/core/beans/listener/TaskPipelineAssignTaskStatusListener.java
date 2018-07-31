@@ -7,6 +7,8 @@ import org.apache.curator.framework.recipes.cache.NodeCacheListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+
 /**
  * @author xinzai
  * @create 2018-07-24 下午5:13
@@ -41,6 +43,7 @@ public abstract class TaskPipelineAssignTaskStatusListener {
         if(!TaskPipelineCoreConstant.TaskStatus.DONE.status().equals(status)) {
             return;
         }
+        shutdown();
         onAssignTaskDone(appName,assignTaskName);
     }
 
@@ -73,5 +76,16 @@ public abstract class TaskPipelineAssignTaskStatusListener {
 
     public void setAssignTaskName(String assignTaskName) {
         this.assignTaskName = assignTaskName;
+    }
+
+    public void shutdown(){
+        try {
+            operation.removeListener(cache,listener);
+            operation = null;
+            listener = null;
+            cache = null;
+        } catch (IOException e) {
+            log.error("assign task status listener app:{} task:{} assignTaskName:{} remove exception",appName,taskName,assignTaskName,e);
+        }
     }
 }

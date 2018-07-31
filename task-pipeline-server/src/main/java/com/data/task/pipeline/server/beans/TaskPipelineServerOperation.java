@@ -144,7 +144,7 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
 
     public void watchTaskStatusAndAction(String appName, String taskName){
         try {
-            watchTaskStatus(appName, taskName, new TaskPipelineTaskStatusListener(appName) {
+            watchTaskStatus(appName, taskName, new TaskPipelineTaskStatusListener(SERVER,appName) {
                 @Override
                 public void onTaskStatusChange(String appName, String taskName, String status) {
                     //若状态为resubmit则重新分配作业

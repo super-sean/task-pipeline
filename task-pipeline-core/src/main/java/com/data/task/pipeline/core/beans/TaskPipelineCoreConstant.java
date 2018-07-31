@@ -21,6 +21,8 @@ public class TaskPipelineCoreConstant {
     public static final String WORKER = "worker";
     public static final String TASK = "task";
     public static final String APP_Node_NAME = "appNodeName";
+    public static final String APP = "app";
+    public static final String SERVER = "server";
 
     public enum TaskStatus {
         SUBMIT("submit"),RUNNING("running"),DONE("done"),CONSUMED("consumed"),NOWORKER("noworker"),REPEAT("repeat"),MISSAPP("missapp"),RESUBMIT("resubmit");

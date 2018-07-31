@@ -11,6 +11,7 @@ import org.apache.curator.framework.recipes.cache.PathChildrenCacheListener;
 import org.apache.zookeeper.CreateMode;
 
 import javax.annotation.PreDestroy;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -78,6 +79,13 @@ public abstract class TaskPipelineBaseOperation {
         cache.start(PathChildrenCache.StartMode.BUILD_INITIAL_CACHE);
         cache.getListenable().addListener(listener);
     }
+
+    public void removeListener(NodeCache cache,NodeCacheListener listener) throws IOException {
+        cache.getListenable().removeListener(listener);
+        cache.close();
+    }
+
+
 
     @PreDestroy
     public void destory(){

@@ -4,6 +4,8 @@ import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConstant;
 import com.data.task.pipeline.core.beans.listener.TaskPipelineTaskStatusListener;
 
+import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.APP;
+
 /**
  * @author xinzai
  * create 2018-07-23 下午2:22
@@ -20,7 +22,7 @@ public class AppRunnerTest {
         config.setKeepApiveTime(0);
         config.setQueueSize(20);
         TaskPipelineAppSupporter supporter = new TaskPipelineAppSupporter("test1",config);
-        TaskPipelineTaskStatusListener listener = new TaskPipelineTaskStatusListener(supporter.getAppName()) {
+        TaskPipelineTaskStatusListener listener = new TaskPipelineTaskStatusListener(APP,supporter.getAppName()) {
             @Override
             public void onTaskStatusChange(String appName, String taskName, String status) {
                 System.out.println(appName);
