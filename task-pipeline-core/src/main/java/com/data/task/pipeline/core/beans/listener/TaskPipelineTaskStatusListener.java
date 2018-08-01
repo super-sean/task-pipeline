@@ -64,6 +64,7 @@ public abstract class TaskPipelineTaskStatusListener {
         try {
             if(!operation.checkTaskResultExist(appName,taskName)){
                 result = "";
+                return;
             }
             result = operation.getTaskResult(appName,taskName);
         } catch (Exception e) {

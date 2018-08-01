@@ -7,9 +7,7 @@ import org.apache.zookeeper.CreateMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.*;
@@ -138,9 +136,26 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public void submitTaskNode(String appName,String taskName,String params) throws Exception {
-        createNode(TASKS_PATH + appName + "/" + taskName,"");
-        createNode(TASKS_PATH + appName + "/" + taskName + TASKS_PARAMS,params);
-        createNode(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS,TaskStatus.SUBMIT.status());
+        createTaskNodeInTransaction(appName,taskName,params);
+
+
+    }
+
+    /**
+     * 用事务提交任务，避免影响worker获取状态及参数时，节点还没生成
+     * @param appName
+     * @param taskName
+     * @param params
+     * @throws Exception
+     */
+    private void createTaskNodeInTransaction(String appName,String taskName,String params) throws Exception {
+        getCf().inTransaction()
+                .create().forPath(TASKS_PATH + appName + "/" + taskName,"".getBytes())
+                .and()
+                .create().forPath(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS,TaskStatus.SUBMIT.status().getBytes())
+                .and()
+                .create().forPath(TASKS_PATH + appName + "/" + taskName + TASKS_PARAMS,params.getBytes())
+                .and().commit();
     }
 
     /**
@@ -420,6 +435,9 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @throws Exception
      */
     public List<String> getWorkerList(String appName) throws Exception {
+        if(!checkNodeExist(WORKERS_PATH + appName)){
+            return Collections.EMPTY_LIST;
+        }
         return getNodeChildren(WORKERS_PATH + appName);
     }
 

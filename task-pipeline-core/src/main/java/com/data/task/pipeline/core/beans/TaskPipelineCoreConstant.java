@@ -23,6 +23,9 @@ public class TaskPipelineCoreConstant {
     public static final String APP_Node_NAME = "appNodeName";
     public static final String APP = "app";
     public static final String SERVER = "server";
+    public static final String ACL_AUTH_SCHEMA = "auth";
+    public static final String DIGEST ="digest";
+
 
     public enum TaskStatus {
         SUBMIT("submit"),RUNNING("running"),DONE("done"),CONSUMED("consumed"),NOWORKER("noworker"),REPEAT("repeat"),MISSAPP("missapp"),RESUBMIT("resubmit");

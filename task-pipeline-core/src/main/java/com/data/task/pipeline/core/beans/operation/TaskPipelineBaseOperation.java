@@ -1,7 +1,8 @@
 package com.data.task.pipeline.core.beans.operation;
 
-import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.TaskPipelineCuratorFrameworkFactory;
+import com.data.task.pipeline.core.beans.config.TaskPipelineACLProvider;
+import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.recipes.cache.NodeCache;
@@ -28,10 +29,11 @@ public abstract class TaskPipelineBaseOperation {
     private ExecutorService pool;
 
     public TaskPipelineBaseOperation(TaskPipelineCoreConfig config) {
-        TaskPipelineCuratorFrameworkFactory taskPipelineCuratorFrameworkFactory = new TaskPipelineCuratorFrameworkFactory(NAMESPACE, config.getZkConnectStr(), config.getSessionTimeout(), config.getBaseSleepTimeMs(), config.getMaxRetries());
-        this.cf = taskPipelineCuratorFrameworkFactory.getCuratorFramework();
+        TaskPipelineACLProvider taskPipelineACLProvider = new TaskPipelineACLProvider(config.getAclIds(),config.getAclId());
+        TaskPipelineCuratorFrameworkFactory taskPipelineCuratorFrameworkFactory = new TaskPipelineCuratorFrameworkFactory(NAMESPACE, config.getZkConnectStr(), config.getSessionTimeout(), config.getBaseSleepTimeMs(), config.getMaxRetries(),taskPipelineACLProvider);
+        cf = taskPipelineCuratorFrameworkFactory.getCuratorFramework();
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("task-pipeline-callback-pool-%d").build();
-        pool = new ThreadPoolExecutor(config.getCorePoolSize(), config.getMaxthreadPoolSize(), config.getKeepApiveTime(), TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(config.getQueueSize()), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
+        pool = new ThreadPoolExecutor(config.getCorePoolSize(), config.getMaxthreadPoolSize(), config.getKeepApiveTime(), TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(config.getQueueSize()), namedThreadFactory, new ThreadPoolExecutor.AbortPolicy());
         cf.start();
     }
 

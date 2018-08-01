@@ -4,6 +4,9 @@ import com.data.task.pipeline.core.beans.listener.TaskPipelineAssignTaskListener
 import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConstant;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.lang.Thread.sleep;
 
 /**
@@ -22,6 +25,11 @@ public class WorkerRunnerTest {
         config.setMaxthreadPoolSize(10);
         config.setKeepApiveTime(0);
         config.setQueueSize(20);
+        List<String> aclIds = new ArrayList<>();
+        aclIds.add("tp_worker:^zskxtpworker123456");
+        aclIds.add("tp_server:^zskxtpserver123456");
+        config.setAclIds(aclIds);
+        config.setAclId("tp_worker:^zskxtpworker123456");
         TaskPipelineWorkerSupporter supporter = new TaskPipelineWorkerSupporter("test1",config);
         TaskPipelineAssignTaskListener listener = new TaskPipelineAssignTaskListener(supporter.getAppName(),supporter.getNodeName()) {
             @Override

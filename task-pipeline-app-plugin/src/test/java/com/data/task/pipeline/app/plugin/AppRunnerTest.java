@@ -1,8 +1,11 @@
 package com.data.task.pipeline.app.plugin;
 
-import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.TaskPipelineCoreConstant;
+import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
 import com.data.task.pipeline.core.beans.listener.TaskPipelineTaskStatusListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.APP;
 
@@ -21,6 +24,11 @@ public class AppRunnerTest {
         config.setMaxthreadPoolSize(10);
         config.setKeepApiveTime(0);
         config.setQueueSize(20);
+        List<String> aclIds = new ArrayList<>();
+        aclIds.add("tp_app:^zskxtpapp123456");
+        aclIds.add("tp_server:^zskxtpserver123456");
+        config.setAclIds(aclIds);
+        config.setAclId("tp_app:^zskxtpapp123456");
         TaskPipelineAppSupporter supporter = new TaskPipelineAppSupporter("test1",config);
         TaskPipelineTaskStatusListener listener = new TaskPipelineTaskStatusListener(APP,supporter.getAppName()) {
             @Override

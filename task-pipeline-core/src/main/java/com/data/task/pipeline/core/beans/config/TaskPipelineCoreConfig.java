@@ -1,5 +1,8 @@
 package com.data.task.pipeline.core.beans.config;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author xinzai
  * @create 2018-07-24 上午10:01
@@ -22,6 +25,10 @@ public class TaskPipelineCoreConfig {
     private int keepApiveTime;
 
     private int queueSize;
+
+    private List<String> aclIds = Collections.emptyList();
+
+    private String aclId;
 
     public String getZkConnectStr() {
         return zkConnectStr;
@@ -85,5 +92,21 @@ public class TaskPipelineCoreConfig {
 
     public void setQueueSize(int queueSize) {
         this.queueSize = queueSize;
+    }
+
+    public List<String> getAclIds() {
+        return aclIds;
+    }
+
+    public void setAclIds(List<String> aclIds) {
+        this.aclIds = aclIds;
+    }
+
+    public String getAclId() {
+        return aclId;
+    }
+
+    public void setAclId(String aclId) {
+        this.aclId = aclId;
     }
 }

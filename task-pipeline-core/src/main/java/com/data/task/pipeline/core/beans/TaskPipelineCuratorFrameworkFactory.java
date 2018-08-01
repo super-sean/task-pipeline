@@ -1,5 +1,6 @@
 package com.data.task.pipeline.core.beans;
 
+import com.data.task.pipeline.core.beans.config.TaskPipelineACLProvider;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -27,7 +28,7 @@ public class TaskPipelineCuratorFrameworkFactory {
 
     private CuratorFramework cf;
 
-    public TaskPipelineCuratorFrameworkFactory(String nameSpace, String zkConnectStr,int sessionTimeout,int baseSleepTimeMs, int maxRetries) {
+    public TaskPipelineCuratorFrameworkFactory(String nameSpace, String zkConnectStr, int sessionTimeout, int baseSleepTimeMs, int maxRetries, TaskPipelineACLProvider aCLProvider) {
         this.nameSpace = nameSpace;
         this.zkConnectStr = zkConnectStr;
         this.sessionTimeout = sessionTimeout;
@@ -41,6 +42,8 @@ public class TaskPipelineCuratorFrameworkFactory {
         }
         RetryPolicy retryPolicy = new ExponentialBackoffRetry(baseSleepTimeMs, maxRetries);
         cf = CuratorFrameworkFactory.builder()
+                .aclProvider(aCLProvider)
+                .authorization(aCLProvider.getAuthInfos())
                 .connectString(zkConnectStr)
                 .sessionTimeoutMs(sessionTimeout)
                 .retryPolicy(retryPolicy)

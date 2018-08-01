@@ -9,11 +9,11 @@ import org.apache.curator.framework.recipes.leader.LeaderLatch;
 import org.apache.curator.framework.recipes.leader.LeaderLatchListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.*;
 import static java.lang.Thread.sleep;
@@ -92,28 +92,31 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
         return new WorkerInfo(worker, Integer.MAX_VALUE);
     }
 
-    public WorkerInfo getWorker(String appName) throws Exception {
+    public Optional<WorkerInfo> getWorker(String appName) throws Exception {
         List<String> workers = getWorkerList(appName);
         //间隔10秒重新获取一次
         if(workers.size() == 0){
             sleep(10000);
             workers = getWorkerList(appName);
         }
+        if(workers.size() == 0 ){
+            return Optional.ofNullable(null);
+        }
         //获取权重最小的第一个节点作为worker
         WorkerInfo worker = workers.stream().map(w -> getWorkerInfo(appName,w)).min((w1,w2) -> w1.getWeight() < w2.getWeight()?1:0).get();
-        return worker;
+        return Optional.ofNullable(worker);
     }
 
     public void assignTask(String appName, String taskName){
         WorkerInfo worker = null;
         try {
-            worker = getWorker(appName);
-            if(StringUtils.isEmpty(worker.getNode())){
+            Optional<WorkerInfo> optional = getWorker(appName);
+            if(!optional.isPresent()){
                 log.warn("no worker for app:{} task:{}",appName,taskName);
                 noWorkerAssignResponse(appName,taskName);
                 return;
             }
-
+            worker = optional.get();
             TaskPipelineAssignTaskStatusListener assignTaskStatusListener = new TaskPipelineAssignTaskStatusListener(appName,taskName) {
                 @Override
                 public void onAssignTaskDone(String appName, String assignTaskName) {

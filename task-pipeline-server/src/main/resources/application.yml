@@ -9,5 +9,10 @@ task:
       maxthreadPoolSize: 10
       keepApiveTime: 0
       queueSize: 20
+      aclIds:
+        - tp_server:^zskxtpserver123456
+        - tp_app:^zskxtpapp123456
+        - tp_worker:^zskxtpworker123456
+      aclId: tp_server:^zskxtpserver123456
 logging:
   path: log/
