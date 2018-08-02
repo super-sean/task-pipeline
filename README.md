@@ -1,12 +1,3 @@
-title: zk分布式任务队列交互设计
-author: Sean
-tags:
-  - zookeeper
-  - 分布式
-  - 队列
-categories:
-  - 设计
-date: 2018-07-22 23:12:00
 ---
 ### 背景
 近来公司业务上越来越多的跨进程比较耗时计算的场景出现，想用异步通信来解决长时间资源占用及等待问题，而基于多方的探讨，不考虑采用_mina_和_netty_这种异步通信的框架，最后决定使用**zookeeper**来实现
@@ -71,7 +62,15 @@ baseOperation为zk的基本操作，operation为倾向原子性业务操作，�
 ![监听器的抽象类](readmeimg/listener_class.png)
 每个角色都是基于以上两个核心模块加以逻辑处理来实现自己的功能
 
-### Task分发策略
+### 其它相关设计
+#### Task分发策略
 worker每当被分发task，便权重添加1，处理完则减1  
 分发Task时选择权重最小的节点  
-若权重都一样，则随机一个节点
+若权重都一样，则随机一个节点  
+
+#### server主从实现
+使用curator包的LeaderLatch
+
+#### zk path acl权限管理
+使用三个角色，tp_server,tp_worker,tp_app  
+目前没有做细粒度控制，只是tp_server创建的给另外两个角色授权，tp_worker创建的给tp_server授权，tp_app创建的给tp_server授权
