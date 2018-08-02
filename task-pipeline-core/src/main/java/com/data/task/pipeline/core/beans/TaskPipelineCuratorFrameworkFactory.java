@@ -10,7 +10,7 @@ import javax.annotation.PreDestroy;
 
 /**
  * @author xinzai
- * @create 2018-07-23 下午3:01
+ * create 2018-07-23 下午3:01
  **/
 public class TaskPipelineCuratorFrameworkFactory {
 

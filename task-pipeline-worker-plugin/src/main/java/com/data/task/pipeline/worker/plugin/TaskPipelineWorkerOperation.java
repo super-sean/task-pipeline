@@ -7,7 +7,7 @@ import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.ASSIGN_
 
 /**
  * @author xinzai
- * @create 2018-07-25 上午10:31
+ * create 2018-07-25 上午10:31
  **/
 public class TaskPipelineWorkerOperation extends TaskPipelineOperation {
 

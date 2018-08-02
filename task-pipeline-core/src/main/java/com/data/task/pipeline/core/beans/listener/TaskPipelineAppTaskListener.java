@@ -10,7 +10,7 @@ import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.HISTORY
 
 /**
  * @author xinzai
- * @create 2018-07-25 下午5:21
+ * create 2018-07-25 下午5:21
  **/
 public abstract class TaskPipelineAppTaskListener {
     private static Logger log = LoggerFactory.getLogger(TaskPipelineAppTaskListener.class);

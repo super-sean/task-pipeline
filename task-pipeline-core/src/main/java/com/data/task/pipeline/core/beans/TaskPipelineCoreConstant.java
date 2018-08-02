@@ -2,7 +2,7 @@ package com.data.task.pipeline.core.beans;
 
 /**
  * @author xinzai
- * @create 2018-07-23 下午3:51
+ * create 2018-07-23 下午3:51
  **/
 public class TaskPipelineCoreConstant {
     public static final String NAMESPACE = "task_pipeline";

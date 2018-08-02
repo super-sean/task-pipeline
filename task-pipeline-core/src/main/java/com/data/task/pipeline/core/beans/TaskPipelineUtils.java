@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
 
 /**
  * @author xinzai
- * @create 2018-07-27 上午10:32
+ * create 2018-07-27 上午10:32
  **/
 public class TaskPipelineUtils {
     private static Logger log = LoggerFactory.getLogger(TaskPipelineUtils.class);

@@ -15,7 +15,7 @@ import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.DIGEST;
 
 /**
  * @author xinzai
- * @create 2018-08-01 上午9:24
+ * create 2018-08-01 上午9:24
  **/
 public class TaskPipelineACLProvider implements ACLProvider {
 

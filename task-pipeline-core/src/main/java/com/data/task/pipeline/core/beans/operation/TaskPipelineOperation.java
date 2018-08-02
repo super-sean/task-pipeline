@@ -14,7 +14,7 @@ import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.*;
 
 /**
  * @author xinzai
- * @create 2018-07-23 下午5:57
+ * create 2018-07-23 下午5:57
  **/
 public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
 

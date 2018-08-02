@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * @author xinzai
- * @create 2018-07-24 上午10:01
+ * create 2018-07-24 上午10:01
  **/
 public class TaskPipelineCoreConfig {
 

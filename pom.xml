@@ -5,12 +5,13 @@
 
 	<groupId>com.github.super-sean</groupId>
 	<artifactId>task-pipeline</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
+	
 	<name>task-pipeline</name>
 	<description>project for distributed tasks management</description>
+	<url>https://github.com/super-sean/task-pipeline</url>
 	<modules>
-		<module>task-pipeline-server</module>
 		<module>task-pipeline-core</module>
 		<module>task-pipeline-app-plugin</module>
 		<module>task-pipeline-worker-plugin</module>

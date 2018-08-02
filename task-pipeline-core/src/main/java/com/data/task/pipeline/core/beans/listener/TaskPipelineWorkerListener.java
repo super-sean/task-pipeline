@@ -9,7 +9,7 @@ import static org.apache.curator.framework.recipes.cache.PathChildrenCacheEvent.
 
 /**
  * @author xinzai
- * @create 2018-07-24 下午5:13
+ * create 2018-07-24 下午5:13
  **/
 public abstract class TaskPipelineWorkerListener {
     private static Logger log = LoggerFactory.getLogger(TaskPipelineWorkerListener.class);

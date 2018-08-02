@@ -20,7 +20,7 @@ import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.NAMESPA
 
 /**
  * @author xinzai
- * @create 2018-07-23 下午4:08
+ * create 2018-07-23 下午4:08
  **/
 public abstract class TaskPipelineBaseOperation {
 

@@ -11,7 +11,7 @@ import java.io.IOException;
 
 /**
  * @author xinzai
- * @create 2018-07-24 下午5:13
+ * create 2018-07-24 下午5:13
  **/
 public abstract class TaskPipelineAssignTaskStatusListener {
     private static Logger log = LoggerFactory.getLogger(TaskPipelineAssignTaskStatusListener.class);
