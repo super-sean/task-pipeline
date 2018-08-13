@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.*;
 
@@ -35,6 +36,7 @@ public abstract class TaskPipelineAssignTaskListener {
      * @throws Exception
      */
     private void onTaskListChange(PathChildrenCacheEvent pathChildrenCacheEvent) throws Exception {
+        log.info("taskList change:{}",pathChildrenCacheEvent.getType(),pathChildrenCacheEvent.getData());
         //只监听新增事件
         if(!pathChildrenCacheEvent.getType().equals(PathChildrenCacheEvent.Type.CHILD_ADDED)){
             return;
@@ -56,9 +58,13 @@ public abstract class TaskPipelineAssignTaskListener {
         System.arraycopy(assignTaskNameSplitArray, 3, taskNameArray, 0, taskNameArray.length);
         //获取task
         String taskName = StringUtils.join(Arrays.asList(taskNameArray),TASK_SEP);
-
+        log.error("appName:{} taskName:{} add",appName,taskName);
         //检查task状态
-        String status = operation.getTaskStatus(appName,taskName);
+        Optional<String> statusOption = operation.getTaskStatus(appName,taskName);
+        if(!statusOption.isPresent()){
+            return;
+        }
+        String status = statusOption.get();
         if(!TaskPipelineCoreConstant.TaskStatus.SUBMIT.status().equals(status) && !TaskPipelineCoreConstant.TaskStatus.RESUBMIT.status().equals(status)){
             //更新assignTask状态为重复分配
             operation.updateAssignTaskStatus(appName,assignTaskName, TaskPipelineCoreConstant.TaskStatus.REPEAT.status());

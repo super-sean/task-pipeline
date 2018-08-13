@@ -26,7 +26,7 @@ public abstract class TaskPipelineWorkerListener {
             }
             String node = pathChildrenCacheEvent.getData().getPath().split("/")[3];
             this.node = node;
-            log.info("app:{} worker:{} event:{}",appName,node,pathChildrenCacheEvent.getType());
+            log.info("app:{} worker:{} event:{} data:{}",appName,node,pathChildrenCacheEvent.getType());
             if(pathChildrenCacheEvent.getType() != CHILD_REMOVED){
                 return;
             }

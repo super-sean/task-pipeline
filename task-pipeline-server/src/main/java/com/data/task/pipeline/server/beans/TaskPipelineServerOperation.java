@@ -117,6 +117,9 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
                 return;
             }
             worker = optional.get();
+
+            log.info(" assign app:{} Task:{} to worker:{}",appName,taskName,worker.getNode());
+
             TaskPipelineAssignTaskStatusListener assignTaskStatusListener = new TaskPipelineAssignTaskStatusListener(appName,taskName) {
                 @Override
                 public void onAssignTaskDone(String appName, String assignTaskName) {
@@ -160,7 +163,10 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
                         assignTask(appName,taskName);
                         return;
                     }
-                    judgeAndArchiveTask(appName,taskName,status);
+                    if(TaskStatus.CONSUMED.status().equals(status)) {
+                        judgeAndArchiveTask(appName,taskName,status);
+                    }
+
                 }
             });
         } catch (Exception e){
@@ -221,7 +227,11 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
                 return;
             }
 
-            String status = getTaskStatus(app,task);
+            Optional<String> statusOption = getTaskStatus(app,task);
+            if(!statusOption.isPresent()){
+                return;
+            }
+            String status = statusOption.get();
             //如果是已经消费或者失去app连接的任务则进行归档
             judgeAndArchiveTask(app,task,status);
 

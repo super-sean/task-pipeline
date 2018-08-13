@@ -165,8 +165,11 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @return
      * @throws Exception
      */
-    public String getTaskStatus(String appName,String taskName) throws Exception {
-        return getNodeValue(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS);
+    public Optional<String> getTaskStatus(String appName,String taskName) throws Exception {
+        if(!checkNodeExist(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS)){
+            return Optional.ofNullable(null);
+        }
+        return Optional.ofNullable(getNodeValue(TASKS_PATH + appName + "/" + taskName + TASKS_STATUS));
     }
 
     /**
@@ -452,6 +455,11 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
         String paramsPath = TASKS_PATH + appName + "/" + taskName + TASKS_PARAMS;
         String stausPath = TASKS_PATH + appName + "/" + taskName + TASKS_STATUS;
         String resultPath = TASKS_PATH + appName + "/" + taskName + TASKS_RESULT;
+        log.info("archiveTask for appName:{} taskName",appName,taskName);
+        if(checkNodeExist(TASKS_PATH + appName + HISTORY_DIR + taskName + TASKS_PARAMS)){
+            log.info("repeat archiveTask for appName:{} taskName",appName,taskName);
+            return;
+        }
         createNode(TASKS_PATH + appName + HISTORY_DIR + taskName + TASKS_PARAMS,getNodeValue(paramsPath));
         createNode(TASKS_PATH + appName + HISTORY_DIR + taskName + TASKS_STATUS,getNodeValue(stausPath));
         if(checkTaskResultExist(appName,taskName)) {

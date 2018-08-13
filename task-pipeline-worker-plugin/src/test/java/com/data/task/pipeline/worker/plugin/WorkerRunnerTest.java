@@ -1,8 +1,7 @@
 package com.data.task.pipeline.worker.plugin;
 
-import com.data.task.pipeline.core.beans.listener.TaskPipelineAssignTaskListener;
 import com.data.task.pipeline.core.beans.config.TaskPipelineCoreConfig;
-import com.data.task.pipeline.core.beans.TaskPipelineCoreConstant;
+import com.data.task.pipeline.core.beans.listener.TaskPipelineAssignTaskListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +17,12 @@ public class WorkerRunnerTest {
     public static void main(String[] args) throws Exception {
         TaskPipelineCoreConfig config = new TaskPipelineCoreConfig();
         config.setZkConnectStr("127.0.0.1:2181");
-        config.setSessionTimeout(1000);
+        config.setSessionTimeout(10000);
         config.setBaseSleepTimeMs(0);
         config.setMaxRetries(5);
         config.setCorePoolSize(5);
         config.setMaxthreadPoolSize(10);
-        config.setKeepApiveTime(0);
+        config.setKeepApiveTime(5000);
         config.setQueueSize(20);
         List<String> aclIds = new ArrayList<>();
         aclIds.add("tp_worker:^zskxtpworker123456");
@@ -39,7 +38,7 @@ public class WorkerRunnerTest {
                 System.out.println(taskName);
                 System.out.println(node);
                 try {
-                    supporter.updateTaskStatus(taskName, TaskPipelineCoreConstant.TaskStatus.RUNNING.status());
+                    //supporter.updateTaskStatus(taskName, TaskPipelineCoreConstant.TaskStatus.RUNNING.status());
                     sleep(10000);
                     supporter.fulfilATask(taskName,"{\"type\":\"content\",\"value\":\"something\"}");
                 } catch (Exception e) {

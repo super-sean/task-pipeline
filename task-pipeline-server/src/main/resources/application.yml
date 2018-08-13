@@ -2,7 +2,7 @@ task:
   pipeline:
     config:
       zkConnectStr: 127.0.0.1:2181
-      sessionTimeout: 5000
+      sessionTimeout: 3600000
       baseSleepTimeMs: 0
       maxRetries: 5
       corePoolSize: 5
@@ -16,3 +16,5 @@ task:
       aclId: tp_server:^zskxtpserver123456
 logging:
   path: log/
+server:
+  port: 8888

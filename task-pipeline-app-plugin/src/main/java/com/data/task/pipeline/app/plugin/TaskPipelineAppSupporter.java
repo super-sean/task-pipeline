@@ -6,6 +6,8 @@ import com.data.task.pipeline.core.beans.listener.TaskPipelineTaskStatusListener
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+
 /**
  * @author xinzai
  * create 2018-07-23 下午2:17
@@ -37,7 +39,7 @@ public class TaskPipelineAppSupporter {
         operation.submitTask(taskName,params,listener);
     }
 
-    public String getTaskStatus(String taskName) throws Exception {
+    public Optional<String> getTaskStatus(String taskName) throws Exception {
         return operation.getTaskStatus(appName,taskName);
     }
 

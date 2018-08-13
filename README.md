@@ -74,3 +74,4 @@ worker每当被分发task，便权重添加1，处理完则减1
 #### zk path acl权限管理
 使用三个角色，tp_server,tp_worker,tp_app  
 目前没有做细粒度控制，只是tp_server创建的给另外两个角色授权，tp_worker创建的给tp_server授权，tp_app创建的给tp_server授权
+

@@ -49,8 +49,8 @@ public abstract class TaskPipelineTaskStatusListener {
     private void onTaskStatusChangeCallback(String appName,String taskName,String status) throws Exception {
         boolean isAppDone = TaskPipelineCoreConstant.TaskStatus.DONE.status().equals(status) || TaskPipelineCoreConstant.TaskStatus.NOWORKER.status().equals(status);
         if(APP.equals(platform) && isAppDone) {
-            operation.updateTaskStatus(appName, taskName, TaskPipelineCoreConstant.TaskStatus.CONSUMED.status());
             storeResult();
+            operation.updateTaskStatus(appName, taskName, TaskPipelineCoreConstant.TaskStatus.CONSUMED.status());
             shutdown();
         }
         boolean isServerDone = TaskPipelineCoreConstant.TaskStatus.CONSUMED.status().equals(status) || TaskPipelineCoreConstant.TaskStatus.MISSAPP.status().equals(status);
