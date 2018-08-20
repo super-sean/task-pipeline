@@ -53,7 +53,7 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
         //监听task app目录下的新节点变化
         apps.forEach(appName -> {
             try {
-                watchTaskList(appName, listener);
+                watchTaskList(appName, listener,1);
             } catch (Exception e) {
                 log.error("watch app:{} task list exception:{}",appName,e);
             }
@@ -64,12 +64,12 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
             @Override
             public void onAppAdd(String appName) {
                 try {
-                    watchTaskList(appName, listener);
+                    watchTaskList(appName, listener,1);
                 } catch (Exception e) {
                     log.error("watch new app:{} task list exception:{}",appName,e);
                 }
             }
-        });
+        },1);
 
     }
 
@@ -252,7 +252,7 @@ public class TaskPipelineServerOperation extends TaskPipelineOperation {
             public void onWorkerDelete(String appName, String node) {
                     onWorkerDeleteAction(appName,node);
             }
-        });
+        },1);
     }
 
     private void onWorkerDeleteAction(String appName, String worker) {

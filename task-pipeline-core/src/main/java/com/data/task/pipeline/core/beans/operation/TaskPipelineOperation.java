@@ -296,9 +296,9 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @param listener
      * @throws Exception
      */
-    public void watchWorkerList(String appName,TaskPipelineWorkerListener listener) throws Exception {
+    public void watchWorkerList(String appName,TaskPipelineWorkerListener listener,int threadCount) throws Exception {
         listener.setOperation(this);
-        watchChildrenNodes(WORKERS_PATH + appName, listener.getListener());
+        watchChildrenNodes(WORKERS_PATH + appName, listener.getListener(),threadCount);
     }
 
     /**
@@ -330,9 +330,9 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @param listener
      * @throws Exception
      */
-    public void watchTaskAppList(TaskPipelineFunctionAppListListener listener) throws Exception {
+    public void watchTaskAppList(TaskPipelineFunctionAppListListener listener,int threadCount) throws Exception {
         listener.setOperation(this);
-        watchChildrenNodes(TASKS_PATH.substring(0,TASKS_PATH.length() - 1),listener.getListener());
+        watchChildrenNodes(TASKS_PATH.substring(0,TASKS_PATH.length() - 1),listener.getListener(),threadCount);
     }
 
 
@@ -341,9 +341,9 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @param listener
      * @throws Exception
      */
-    public void watchWorkerAppList(TaskPipelineFunctionAppListListener listener) throws Exception {
+    public void watchWorkerAppList(TaskPipelineFunctionAppListListener listener,int threadCount) throws Exception {
         listener.setOperation(this);
-        watchChildrenNodes(WORKERS_PATH.substring(0,WORKERS_PATH.length() - 1),listener.getListener());
+        watchChildrenNodes(WORKERS_PATH.substring(0,WORKERS_PATH.length() - 1),listener.getListener(),threadCount);
     }
 
     /**
@@ -352,9 +352,9 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @param listener
      * @throws Exception
      */
-    public void watchTaskList(String appName,TaskPipelineAppTaskListener listener) throws Exception {
+    public void watchTaskList(String appName,TaskPipelineAppTaskListener listener,int threadCount) throws Exception {
         listener.setOperation(this);
-        watchChildrenNodes(TASKS_PATH + appName,listener.getListener());
+        watchChildrenNodes(TASKS_PATH + appName,listener.getListener(),threadCount);
     }
 
     /**
@@ -363,9 +363,9 @@ public abstract class TaskPipelineOperation extends TaskPipelineBaseOperation {
      * @param listener
      * @throws Exception
      */
-    public void watchAssignTaskList(String appName,TaskPipelineAssignTaskListener listener) throws Exception {
+    public void watchAssignTaskList(String appName,TaskPipelineAssignTaskListener listener,int threadCount) throws Exception {
         listener.setOperation(this);
-        watchChildrenNodes(ASSIGN_PATH + appName,listener.getListener());
+        watchChildrenNodes(ASSIGN_PATH + appName,listener.getListener(),threadCount);
     }
 
     /**

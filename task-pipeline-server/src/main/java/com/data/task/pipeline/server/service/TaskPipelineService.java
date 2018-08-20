@@ -86,7 +86,7 @@ public class TaskPipelineService {
             public void onAppAdd(String appName) {
                 workerChangeActionDefinition(appName);
             }
-        });
+        },1);
     }
 
     private void workerChangeActionDefinition(String app){

@@ -31,8 +31,8 @@ public class TaskPipelineWorkerSupporter {
         }
     }
 
-    public void watchAssignTask(TaskPipelineAssignTaskListener listener) throws Exception {
-        operation.watchAssignTaskList(appName,listener);
+    public void watchAssignTask(TaskPipelineAssignTaskListener listener,int threadCount) throws Exception {
+        operation.watchAssignTaskList(appName,listener,threadCount);
     }
 
     public void updateTaskStatus(String taskName,String status) throws Exception {

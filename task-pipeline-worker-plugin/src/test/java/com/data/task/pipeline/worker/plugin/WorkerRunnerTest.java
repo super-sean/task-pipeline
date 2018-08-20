@@ -47,7 +47,7 @@ public class WorkerRunnerTest {
 
             }
         };
-        supporter.watchAssignTask(listener);
+        supporter.watchAssignTask(listener,5);
         sleep(1000000);
     }
 }
