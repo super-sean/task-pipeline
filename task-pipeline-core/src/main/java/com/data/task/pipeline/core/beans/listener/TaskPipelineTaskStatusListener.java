@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.APP;
 import static com.data.task.pipeline.core.beans.TaskPipelineCoreConstant.SERVER;
@@ -25,6 +26,7 @@ public abstract class TaskPipelineTaskStatusListener {
     private TaskPipelineOperation operation;
     private String platform;
     private String result;
+    private final CountDownLatch latch = new CountDownLatch(1);
 
     public TaskPipelineTaskStatusListener(String platform,String appName) {
         this.platform = platform;
@@ -50,6 +52,8 @@ public abstract class TaskPipelineTaskStatusListener {
         boolean isAppDone = TaskPipelineCoreConstant.TaskStatus.DONE.status().equals(status) || TaskPipelineCoreConstant.TaskStatus.NOWORKER.status().equals(status);
         if(APP.equals(platform) && isAppDone) {
             storeResult();
+            //完成之后释放锁,用于同步获取计算结果
+            latch.countDown();
             operation.updateTaskStatus(appName, taskName, TaskPipelineCoreConstant.TaskStatus.CONSUMED.status());
             shutdown();
         }
@@ -73,6 +77,19 @@ public abstract class TaskPipelineTaskStatusListener {
     }
 
     public String getTaskResult() {
+        return result;
+    }
+
+    /**
+     * 提交任务后同步等待获取结果
+     * @return
+     */
+    public String getSyncTaskResult() {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            log.error("task pipeline app:{} get task:{} count down latch exception:{}",appName,taskName,e);
+        }
         return result;
     }
     /**

@@ -44,6 +44,7 @@ public class AppRunnerTest {
 
         supporter.submitTask("{\"par1\":\"test\"}",listener);
         System.out.println("---------init task :" + supporter.getTaskStatus(listener.getTaskName()));
+        System.out.println("--------- sync result:" + listener.getSyncTaskResult());
         Thread thread = new Thread();
         thread.sleep(1000000);
     }
