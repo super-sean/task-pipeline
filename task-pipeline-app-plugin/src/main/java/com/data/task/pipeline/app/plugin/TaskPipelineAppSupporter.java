@@ -29,6 +29,7 @@ public class TaskPipelineAppSupporter {
         nodeName = TaskPipelineUtils.getLocalNodeName();
         try {
             operation.registerApp(nodeName);
+            operation.retryRegisterApp(nodeName);
         } catch (Exception e) {
             log.error("register to task-pipeline platform exception",e);
         }

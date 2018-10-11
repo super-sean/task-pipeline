@@ -26,6 +26,7 @@ public class TaskPipelineWorkerSupporter {
         nodeName = TaskPipelineUtils.getLocalNodeName();
         try {
             operation.registerWorker(nodeName);
+            operation.retryRegisterWorker(nodeName);
         } catch (Exception e) {
             log.error("register to task-pipeline platform exception",e);
         }

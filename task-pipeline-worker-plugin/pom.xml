@@ -6,7 +6,7 @@
 
     <groupId>com.github.super-sean</groupId>
     <artifactId>task-pipeline-worker-plugin</artifactId>
-    <version>1.0.12</version>
+    <version>1.0.12.laimi</version>
     <packaging>jar</packaging>
     
     <parent>
